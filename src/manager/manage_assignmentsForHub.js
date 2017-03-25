@@ -644,46 +644,49 @@ global.manage.assignmentsForHub = function(hub) {
 	if(hub.decayingStructures.length > 0) {
 		// Get unassigned node flags
 		let assignments = hub.decayingStructures;
-
-		// Get unassigned workers for the hub...
-		let assignees = hub.towers; // Only want towers to do the topping up
-		// Filter by those not already busy with an assignment...
-		assignees = filter.byNotHasAssignment(assignees);
-
-		//log(assignees);
-		log.cpu('aaa p1');
-		// Filter by tower in the same room
-		assignments = filter.bySameRooms(assignments, _.pluck(_.pluck(assignees, 'room'), 'name'));
-		// Filter by those that need topping up...
+		assignments = filter.byNotHasAssignee(assignments);
+		//assignments = filter.bySameRooms(assignments); // What room names though? I don't have assignees here yet... ugh
 		assignments = filter.byNeedsRepairingTopup(assignments);
-		log.cpu('aaa p2');
 
-		// Looping through assignees and then giving assignment...
-		// Making it assignee oritened by better 
-		if(assignees.length > 0) {
-			for(const assignee of assignees) {
-				// Only those that haven't been assigned yet...
-				assignments = filter.byNotHasAssignee(assignments);
+		if(assignments.length > 0) {
+			for(const assignment of assignments) {
+				// Try to assign...
+				if(true) {
+					// Get unassigned workers for the hub...
+					let assignees = hub.towers; // Only want towers to do the topping up
+					// Filter by those not already busy with an assignment...
+					assignees = filter.byNotHasAssignment(assignees);
+					// Filter by tower in the same room
+					assignees = filter.bySameRoom(assignees, assignment.pos.roomName);
 
-				// If we have some assignees... then assign
-				if(assignments.length > 0) {
-					// Get closest one to assignment...
-					//assignments = sort.byNearest(assignments, assignee);
-					// Get first in array...
-					let assignment = assignments[0];
+					// If we have some assignees... then assign
+					if(assignees.length > 0) {
+						// Get closest one to assignment...
+						assignees = sort.byNearest(assignees, assignment);
+						// Get first in array...
+						let assignee = assignees[0];
 
-					// Set the assignment for this assignee
-					assignee.memory.assignment = {
-						name: 'decayingStructures',
-						target: {
-							id: assignment.id || assignment.name,
-							pos: assignment.pos
-						},
-						method: 'repair'
+						// Set the assignment for this assignee
+						assignee.memory.assignment = {
+							name: 'decayingStructures',
+							target: {
+								id: assignment.id || assignment.name,
+								pos: assignment.pos
+							},
+							method: 'repair'
+						}
+
+						// Continue past this assignment, since it's been assigned and doesn't need any further action...
+						continue;
 					}
+				}
 
-					// Continue past this assignment, since it's been assigned and doesn't need any further action...
-					continue;
+				// Is there a better way
+
+				// If we have run out of towers to assign, break...
+				// This is because we limit our assignees too much
+				if(filter.byNotHasAssignment(hub.towers).length === 0) {
+					break;
 				}
 			}
 		}
