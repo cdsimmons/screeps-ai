@@ -1,0 +1,9 @@
+{
+	"parserOptions": {
+        "ecmaVersion": 6
+    },
+    "rules": {
+        "eqeqeq": "warn",
+        "curly": "warn"
+    }
+}
