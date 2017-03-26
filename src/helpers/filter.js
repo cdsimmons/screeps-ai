@@ -317,9 +317,6 @@ global.filter = function() {
         var result = _.filter(targets, (target) => {
             if(_.contains([STRUCTURE_WALL, STRUCTURE_RAMPART], target.structureType)) {
                 // Basically from 0 to almost max
-                if(target.hits > 1000000) {
-                    log('ra',target.hits, (filter.byHits([target], 0, config.structures.walls.minHits - 1000).length > 0));
-                }
                 return (filter.byHits([target], 0, config.structures.walls.minHits - 1000).length > 0);
             } else {
                 return (filter.byHitsPercentage([target], 0, 80).length > 0); // Could repair to 99 probably without impact

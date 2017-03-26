@@ -640,14 +640,14 @@ global.manage.assignmentsForHub = function(hub) {
 	log.cpu('hubGuardFlags');
 
 	// Decaying structures that need topping up by towers... basically roads and ramparts
-	// CPU spikes... 
-	if(hub.decayingStructures.length > 0) {
+	// Haha, optimized this without having to reformat how I assign to objects ^^
+	// TODO - resolve spike :(
+	if(hub.toppingUpStructures.length > 0) {
 		// Get unassigned node flags
-		let assignments = hub.decayingStructures;
+		let assignments = hub.toppingUpStructures;
 		assignments = filter.byNotHasAssignee(assignments);
-		//assignments = filter.bySameRooms(assignments); // What room names though? I don't have assignees here yet... ugh
-		assignments = filter.byNeedsRepairingTopup(assignments);
 
+		// If we have some assignments, then find them assignees!
 		if(assignments.length > 0) {
 			for(const assignment of assignments) {
 				// Try to assign...
@@ -668,7 +668,7 @@ global.manage.assignmentsForHub = function(hub) {
 
 						// Set the assignment for this assignee
 						assignee.memory.assignment = {
-							name: 'decayingStructures',
+							name: 'toppingUpStructures',
 							target: {
 								id: assignment.id || assignment.name,
 								pos: assignment.pos
@@ -681,8 +681,6 @@ global.manage.assignmentsForHub = function(hub) {
 					}
 				}
 
-				// Is there a better way
-
 				// If we have run out of towers to assign, break...
 				// This is because we limit our assignees too much
 				if(filter.byNotHasAssignment(hub.towers).length === 0) {
@@ -691,7 +689,7 @@ global.manage.assignmentsForHub = function(hub) {
 			}
 		}
 	}
-	log.cpu('decayingStructures');
+	log.cpu('toppingUpStructures');
 
 	// Damaged creeps...
 	if(hub.damagedCreeps.length > 0) {
@@ -757,8 +755,12 @@ global.manage.assignmentsForHub = function(hub) {
 					assignees = filter.byBodyPart(assignees, WORK);
 					assignees = filter.byNotHasAssignment(assignees);
 
+					// If the number of commonerCreeps that are assigned to repair is less than the config...
+					let current = hub.commonerCreeps;
+					current = filter.byHasAssignment(current, 'repair');
+
 					// Leaving 1 behind to do other things... construct, upgrade, etc...
-					if(assignees.length > 0) {
+					if(assignees.length > 0 && current.length < hub.config.assignments.damagedStructures.limit) {
 						// Get closest one to assignment...
 						assignees = sort.byNearest(assignees, assignment);
 						// Get first in array...

@@ -37,6 +37,8 @@ global.manage.actions = function() {
 					continue;
 				}
 
+		        //log.cpu('actioning... '+assignment.method);
+
 		        // If we are in range and not just moving to, then do the action!
 		        // Else moveTo and do idle action! :)
 		        if(destinee.pos.inRangeTo(targetPos, destinee.getActionRange()) && destination.method !== 'moveTo') {
@@ -100,8 +102,7 @@ global.manage.actions = function() {
 					if(!destinee.isEmpty()) {
 			            // Find an idle assignment...
 						let idleAssignments;
-						idleAssignments = world.decayingStructures;
-						idleAssignments = filter.byNeedsRepairingTopup(idleAssignments);
+						idleAssignments = world.toppingUpStructures;
 						idleAssignments = filter.bySameRoom(idleAssignments);
 						idleAssignments = filter.byRange(idleAssignments, 3);
 

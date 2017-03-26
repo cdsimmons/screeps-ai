@@ -7,6 +7,7 @@ global.log = function() {
 
     mod.private.indent = 0;
     mod.private.previousCpu = 0;
+    mod.private.deepCpuLog = true;
 
     // Attach public functions
     mod.public = function(...things) {
@@ -36,6 +37,10 @@ global.log = function() {
     }
 
     mod.public.cpu = function(label, position) {
+        if(!position && !mod.private.deepCpuLog) {
+            return;
+        }
+
         var cpu = log.getCpu();
         var color = config.log.colors.cpu;
         

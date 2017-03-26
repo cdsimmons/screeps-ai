@@ -13,6 +13,7 @@ global.World = function(id) {
     } else {
         // Temp vars
         const flagColors = config.flags.colors;
+        log.cpu('init');
 
         // Creeps
         this.creeps = find.creeps();
@@ -26,6 +27,7 @@ global.World = function(id) {
         this.pesterCreeps = filter.byMemory(this.creeps, 'origin', 'pester');
         // Filtering more...
         this.attackingGuardCreeps = filter.byHasAssignment(this.guardCreeps, 'attack');
+        log.cpu('creeps');
 
         // Flags... need to limit to hub
         this.flags = find.flags();
@@ -40,6 +42,7 @@ global.World = function(id) {
         this.spotGuardFlags = filter.byColors(this.flags, flagColors.spotGuard.primary, flagColors.spotGuard.secondary);
         this.roomGuardFlags = filter.byColors(this.flags, flagColors.roomGuard.primary, flagColors.roomGuard.secondary);
         this.hubGuardFlags = filter.byColors(this.flags, flagColors.hubGuard.primary, flagColors.hubGuard.secondary);
+        log.cpu('flags');
 
         // Constructions... need to limit to hub
         this.structures = find.structures(); // CPU spikes...
@@ -47,12 +50,19 @@ global.World = function(id) {
         this.spawns = find.spawns(); // Could sort busy and energy available
         this.banks = find.banks(); // Tempted to look at flags instead of the objects, but then I can't query the bank itself? capacity etc...
         this.towers = find.towers();
+        log.cpu('others');
         this.constructionSites = find.constructionSites();
+        log.cpu('constructionSites');
         this.decayingStructures = find.decayingStructures();
-        this.damagedStructures = find.damagedStructures(); // CPU spikes...
+        log.cpu('decayingStructures');
+        this.damagedStructures = find.damagedStructures();
+        log.cpu('damagedStructures');
+        this.toppingUpStructures = find.toppingUpStructures();
+        log.cpu('toppingUpStructures');
+        this.lowEnergyStructures = find.lowEnergyStructures();
+        log.cpu('lowEnergyStructures');
         // Filtering
         this.lowTickControllers = _.filter(this.controllers, (controller) => (controller.ticksToDowngrade < CONTROLLER_DOWNGRADE[controller.level]*(config.controller.limit/100)));
-        this.lowEnergyStructures = _.filter(filter.byCapacityPercentage(this.structures, 0, 99), (structure) => (!_.contains(this.banks, structure))); // Excluding banks
         this.lowEnergyBanks = filter.byCapacityPercentage(this.banks, 0, 90);
         this.highEnergyBanks = filter.byCapacityPercentage(this.banks, 10, 100); // TODO - increase bottom number...
 

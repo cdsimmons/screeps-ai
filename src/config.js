@@ -10,6 +10,11 @@ global.config = {
                     count: 2
                 }
             },
+            assignments: {
+                damagedStructures: {
+                    limit: 1
+                }
+            },
             structures: {
             },
             spawn: {

@@ -11,23 +11,29 @@ global.find = function() {
     mod.public.banks = function() {
         // Pass if we already calculated this...
         if(Game.banks === undefined) {
-            // Get all the flags for sources...
-            var flags = mod.public.flags();
-            flags = filter.byColors(flags, config.flags.colors.bank.primary, config.flags.colors.bank.secondary);
-            Game.banks = [];
+            if(cacher.retrieve('banks')) {
+                Game.banks = cacher.retrieve('banks');
+            } else {
+                // Get all the flags for sources...
+                var flags = mod.public.flags();
+                flags = filter.byColors(flags, config.flags.colors.bank.primary, config.flags.colors.bank.secondary);
+                Game.banks = [];
 
-            // Look at the tiles and get the source tile...
-            for(let flag of flags) {
-                // Get the tiles at the location
-                let tiles = flag.room.lookAt(flag);
-                // Filter tiles by type...
-                let structures = _.pluck(filter.byTypes(tiles, ['structure']), 'structure');
-                // Add the source to targets
-                Game.banks = _.union(Game.banks, structures);
+                // Look at the tiles and get the source tile...
+                for(let flag of flags) {
+                    // Get the tiles at the location
+                    let tiles = flag.room.lookAt(flag);
+                    // Filter tiles by type...
+                    let structures = _.pluck(filter.byTypes(tiles, ['structure']), 'structure');
+                    // Add the source to targets
+                    Game.banks = _.union(Game.banks, structures);
+                }
+
+                // Filter out the structures so we only have stores...
+                Game.banks = filter.byStructureTypes(Game.banks, [STRUCTURE_CONTAINER, STRUCTURE_STORAGE, STRUCTURE_LINK]);
+
+                cacher.store('banks', Game.banks);
             }
-
-            // Filter out the structures so we only have stores...
-            Game.banks = filter.byStructureTypes(Game.banks, [STRUCTURE_CONTAINER, STRUCTURE_STORAGE, STRUCTURE_LINK]);
         }
 
         var targets = Game.banks;
@@ -82,13 +88,39 @@ global.find = function() {
     // Get decaying sites
     mod.public.decayingStructures = function() {
         if(Game.decayingStructures === undefined) {
-            // Get all the structures in room
-            Game.decayingStructures = mod.public.structures();
-            // Filter
-            Game.decayingStructures = _.filter(Game.decayingStructures, (target) => (target.ticksToDecay !== undefined));
+            if(cacher.retrieve('decayingStructures')) {
+                Game.decayingStructures = cacher.retrieve('decayingStructures');
+            } else {
+                // Get all the structures in room
+                Game.decayingStructures = mod.public.structures();
+                // Filter
+                Game.decayingStructures = _.filter(Game.decayingStructures, (target) => (target.ticksToDecay !== undefined));
+
+                cacher.store('decayingStructures', Game.decayingStructures);
+            }
         }
 
         var targets = Game.decayingStructures;
+
+        return targets;
+    }
+
+    // Get structures that need topping up...
+    mod.public.toppingUpStructures = function() {
+        if(Game.toppingUpStructures === undefined) {
+            if(cacher.retrieve('toppingUpStructures')) {
+                Game.toppingUpStructures = cacher.retrieve('toppingUpStructures');
+            } else {
+                // Get all the decaying structures
+                Game.toppingUpStructures = mod.public.decayingStructures();
+                // Filter
+                Game.toppingUpStructures = filter.byNeedsRepairingTopup(Game.toppingUpStructures);
+
+                cacher.store('toppingUpStructures', Game.toppingUpStructures);
+            }
+        }
+
+        var targets = Game.toppingUpStructures;
 
         return targets;
     }
@@ -184,6 +216,37 @@ global.find = function() {
         }
 
         var targets = Game.hubRooms;
+
+        return targets;
+    }
+
+    // Low energy structures...
+    mod.public.lowEnergyStructures = function() {
+        if(Game.lowEnergyStructures === undefined) {
+            if(cacher.retrieve('lowEnergyStructures')) {
+                Game.lowEnergyStructures = cacher.retrieve('lowEnergyStructures');
+            } else {
+                Game.lowEnergyStructures = mod.public.structures();
+                Game.lowEnergyStructures = _.filter(Game.lowEnergyStructures, (target) => {
+                    // Filter out energy containers...
+                    if(_.contains([STRUCTURE_CONTAINER, STRUCTURE_STORAGE, STRUCTURE_LINK], target.structureType) || _.contains([STRUCTURE_ROAD, STRUCTURE_WALL, STRUCTURE_RAMPART], target.structureType)) {
+                        return false
+                    }
+
+                    // If they are a tower, then only pass truth test if they are below 50%...
+                    if(_.contains([STRUCTURE_TOWER], target.structureType)) {
+                        return (filter.byCapacityPercentage([target], 0, 50).length > 0);
+                    }
+
+                    // Otherwise fall to returning up to 99%
+                    return (filter.byCapacityPercentage([target], 0, 99).length > 0);
+                });
+
+                cacher.store('lowEnergyStructures', Game.lowEnergyStructures);
+            }
+        }
+
+        var targets = Game.lowEnergyStructures;
 
         return targets;
     }
