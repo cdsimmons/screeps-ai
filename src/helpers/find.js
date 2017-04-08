@@ -73,6 +73,9 @@ global.find = function() {
                 Game.damagedStructures = mod.public.structures();
                 // Filter by needs repairing...
                 Game.damagedStructures = filter.byNeedsRepairing(Game.damagedStructures);
+                // Filter by having a controller in the room...
+                Game.damagedStructures = filter.byHasController(Game.damagedStructures);
+
                 // Sorting here... wouldn't normally but it's efficient caching this way...
                 Game.damagedStructures = sort.byLowestHitsPercentage(Game.damagedStructures);
 
@@ -105,22 +108,39 @@ global.find = function() {
         return targets;
     }
 
-    // Get structures that need topping up...
-    mod.public.toppingUpStructures = function() {
-        if(Game.toppingUpStructures === undefined) {
-            if(cacher.retrieve('toppingUpStructures')) {
-                Game.toppingUpStructures = cacher.retrieve('toppingUpStructures');
+    // Find imminent nukes...
+    mod.public.imminentNukes = function() {
+        if(Game.imminentNukes === undefined) {
+            if(cacher.retrieve('imminentNukes')) {
+                Game.imminentNukes = cacher.retrieve('imminentNukes');
             } else {
-                // Get all the decaying structures
-                Game.toppingUpStructures = mod.public.decayingStructures();
-                // Filter
-                Game.toppingUpStructures = filter.byNeedsRepairingTopup(Game.toppingUpStructures);
+                // Filter by has controller...
+                let rooms = mod.public.hubRooms(); // Need to look everywhere I think, since we want to watch everything for hostiles...
+                rooms = filter.byHasController(rooms); // rooms don't have pos.roomName
 
-                cacher.store('toppingUpStructures', Game.toppingUpStructures);
+                log(rooms);
+
+                // Init nukes
+                Game.imminentNukes = [];
+
+                // Loop through and find all the hostiles in each room...
+                for(let key in rooms) {
+                    let room = rooms[key];
+                    // Add the hostiles in the room to the collection
+                    Game.imminentNukes = _.union(Game.imminentNukes, room.find(FIND_NUKES));
+                }
+
+                // Filter out those that are within 10k landing time...
+                //Game.imminentNukes = _.filter(Game.imminentNukes, (target) => (target.timeToLand < 19000));
+
+                // Store for 5k ticks... so the latest response we get is at 15k
+                // This is not so great... what if there is 2 nukes within 1 tick of each other?
+                // I need to activate safe mode just before a nuke is landing I think, and then pop it and replace in cacher...
+                cacher.store('imminentNukes', Game.imminentNukes, 4999);
             }
         }
 
-        var targets = Game.toppingUpStructures;
+        var targets = Game.imminentNukes;
 
         return targets;
     }
@@ -141,7 +161,9 @@ global.find = function() {
             Game.hostiles = [];
 
             // Loop through and find all the hostiles in each room...
-            for(let room of rooms) {
+            for(let key in rooms) {
+                let room = rooms[key];
+                
                 // Add the hostiles in the room to the collection
                 Game.hostiles = _.union(Game.hostiles, room.find(FIND_HOSTILE_CREEPS));
             }
@@ -215,7 +237,7 @@ global.find = function() {
             Game.hubRooms = _.compact(Game.hubRooms);
         }
 
-        var targets = Game.hubRooms;
+        var targets = Game.rooms;
 
         return targets;
     }
@@ -285,7 +307,9 @@ global.find = function() {
             Game.spills = [];
 
             // Loop through and find all the spills in each room...
-            for(let room of rooms) {
+            for(let key in rooms) {
+                let room = rooms[key];
+
                 // Add the spills in the room to the collection
                 Game.spills = _.union(Game.spills, room.find(FIND_DROPPED_RESOURCES));
             }
@@ -310,7 +334,9 @@ global.find = function() {
                 const rooms = mod.public.hubRooms();
                 let allAdditionalStructures = [];
 
-                for(let room of rooms) {
+                for(let key in rooms) {
+                    let room = rooms[key];
+
                     // Filter does lower it...
                     let additionalStructures = room.find(FIND_STRUCTURES, {
                         filter: function(structure) {
@@ -328,6 +354,26 @@ global.find = function() {
         }
 
         var targets = Game.structures;
+
+        return targets;
+    }
+
+    // Get structures that need topping up...
+    mod.public.toppingUpStructures = function() {
+        if(Game.toppingUpStructures === undefined) {
+            if(cacher.retrieve('toppingUpStructures')) {
+                Game.toppingUpStructures = cacher.retrieve('toppingUpStructures');
+            } else {
+                // Get all the decaying structures
+                Game.toppingUpStructures = mod.public.decayingStructures();
+                // Filter
+                Game.toppingUpStructures = filter.byNeedsRepairingTopup(Game.toppingUpStructures);
+
+                cacher.store('toppingUpStructures', Game.toppingUpStructures);
+            }
+        }
+
+        var targets = Game.toppingUpStructures;
 
         return targets;
     }

@@ -6,6 +6,20 @@ global.manage.assignmentsForExternal = function() {
 
 	const world = new World();
 
+	// Nuke defence!
+	if(world.imminentNukes.length > 0) {
+		// Make sure to add in tick filter again for nukes... otherwise they aren't imminent...
+		Game.notify('IMMINENT NUKE');
+		let assignments = world.imminentNukes;
+
+		if(assignments.length > 0) {
+			for(const assignment of assignments) {
+				Game.notify('IMMINENT NUKE from '+assignment.launchRoomName+' landing at '+assignment.pos.roomName);
+			}
+		}
+		// If I have pos.roomName, then hub filter should actually be working, and I could activate safe mode from hub...
+	}
+
 	// Manage node flags... prioritizing flags since I don't always have view of node
 	if(world.eyeballFlags.length > 0) {
 		// Get unassigned node flags

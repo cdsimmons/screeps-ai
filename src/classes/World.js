@@ -69,6 +69,7 @@ global.World = function(id) {
         // Misc
         this.spills = find.spills();
         this.hostiles = find.hostiles();
+        this.imminentNukes = find.imminentNukes();
 
         // Storing in memory for later...
         Game.world = this;

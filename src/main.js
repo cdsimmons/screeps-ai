@@ -22,10 +22,10 @@ var loop = function () {
     // CPU after all that...
     log.cpu('///////////// end', 'end');
 
-    if(Game.cpu.bucket !== undefined && Game.cpu.bucket < 1000) {
-        Game.notify('Low on CPU in bucket!');
-        log('Low cpu... '+Game.cpu.bucket);
-    }
+    // if(Game.cpu.bucket !== undefined && Game.cpu.bucket < 1000) {
+    //     Game.notify('Low on CPU in bucket!');
+    //     log('Low cpu... '+Game.cpu.bucket);
+    // }
 }
 
 module.exports.loop = loop;

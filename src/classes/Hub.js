@@ -43,7 +43,7 @@ global.Hub = function(id) {
         this.rooms = this.config.rooms;
 
         // Copying world properties and limiting to hub...
-        for(var property in world) {
+        for(let property in world) {
             this[property] = filter.byHub(world[property], this);
         }
 

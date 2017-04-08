@@ -165,6 +165,14 @@ global.filter = function() {
         return targets;
     }
 
+    // Filter by has controller in the room...
+    mod.public.byHasController = function(targets) {
+        log(targets);
+        let result = mod.public.bySameRooms(targets, _.pluck(_.pluck(find.controllers(), 'pos'), 'roomName'));
+
+        return result;
+    }
+
     // Filter all the targets that have an destination
     mod.public.byHasDestination = function(targets) {
         let result = _.filter(targets, (target) => (target.memory.destination !== undefined && target.memory.destination !== null));
@@ -363,14 +371,26 @@ global.filter = function() {
     // The usage for this would be to filter flags for example by what hub/array of room Ids, they're in...
     mod.public.bySameRoom = function(targets, roomName) {
         // Go through all of the targets and get the Room Id... then loop through
-        var result = _.filter(targets, (target) => (target.pos.roomName === roomName));
+        var result = _.filter(targets, (target) => {
+            if(!target.pos) {
+                return  target.name === roomName;
+            } else {
+                return  target.pos.roomName === roomName;
+            }
+        });
         return result;
     }
 
     // The usage for this would be to filter flags for example by what hub/array of room Ids, they're in...
     mod.public.bySameRooms = function(targets, roomNames) {
         // Go through all of the targets and get the Room Id... then loop through
-        var result = _.filter(targets, (target) => (_.contains(roomNames, target.pos.roomName)));
+        var result = _.filter(targets, (target) => {
+            if(!target.pos) {
+                return  _.contains(roomNames, target.name);
+            } else {
+                return  _.contains(roomNames, target.pos.roomName);
+            }
+        });
         return result;
     }
 

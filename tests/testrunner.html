@@ -1,0 +1,57 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Mocha Tests</title>
+	<link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+</head>
+<body>
+	<div id="mocha"></div>
+	<script src="../node_modules/mocha/mocha.js"></script>
+	<script src="../node_modules/chai/chai.js"></script>
+
+	<script>
+		mocha.setup('bdd')
+		mocha.reporter('html');
+	</script>
+
+	<!--
+		Hmm, this is a bit dirty I think...
+		I'm just pulling in the entire code instead of each bit at a time...
+		I suppose that's because of my coding choice to fit with Screeps... I'm not using CommonJS, I'm just compiling it all into 1 file
+	-->
+
+	<!-- Init -->
+	<script src="init.js"></script>
+	<script src="../dist/main.js"></script>
+
+	<!-- Helpers -->
+	<script src="helpers/log.js"></script>
+	<script src="helpers/find.js"></script>
+	<script src="helpers/filter.js"></script>
+	<script src="helpers/sort.js"></script>
+	<script src="helpers/timeout.js"></script>
+	<script src="helpers/command.js"></script>
+
+	<!-- Classes -->
+	<script src="classes/World.js"></script>
+	<script src="classes/Hub.js"></script>
+	<script src="classes/Room.js"></script>
+	<script src="classes/Spawn.js"></script>
+	<script src="classes/Creep.js"></script>
+	<script src="classes/Tower.js"></script>
+
+	<!-- Manager -->
+	<script src="manager/manage.js"></script>
+	<script src="manager/manage_assignmentsForExternal.js"></script>
+	<script src="manager/manage_assignmentsForHub.js"></script>
+	<script src="manager/manage_destinations.js"></script>
+	<script src="manager/manage_spawns.js"></script>
+
+	<script>
+	// Only tests run in real browser, injected script run if options.run == true
+	if (navigator.userAgent.indexOf('PhantomJS') < 0) {
+	  	mocha.run();
+	}
+	</script>
+</body>
+</html>

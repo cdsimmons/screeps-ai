@@ -138,8 +138,8 @@ global.manage.assignmentsForHub = function(hub) {
 			    			'hub': hub.id
 			    		}
 
-			    		let priority = 5;
-			    		if(hub.minerCreeps.length === 0) {
+			    		let priority = 4;
+			    		if(hub.haulerCreeps.length === 0) {
 			    			priority = 1;
 			    		}
 

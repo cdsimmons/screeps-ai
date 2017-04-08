@@ -9,11 +9,14 @@
     "start": "grunt"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "grunt": "^1.0.1",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-eslint": "^19.0.0",
-    "load-grunt-tasks": "^3.5.2"
+    "grunt-mocha": "^1.0.4",
+    "load-grunt-tasks": "^3.5.2",
+    "mocha": "^3.2.0"
   }
 }

@@ -60,6 +60,16 @@ module.exports = function(grunt) {
             }
         },
 
+        // Unit testing... we can only do unit testing... unless we setup a virtual version of the game? Run through a series of objects...
+        mocha: {
+            all: {
+                src: ['tests/testrunner.html'],
+            },
+            options: {
+                run: true
+            }
+        }
+
         // Looking into importing files for project using requirejs, but doesn't really fit the screeps framework which uses commonjs
         // requirejs: {
         //     compile: {

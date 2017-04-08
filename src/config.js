@@ -29,8 +29,25 @@ global.config = {
             rooms: ['sim']
         },
         E53N47: {
-            rooms: ['E53N47', 'E52N47', 'E52N48', 'E53N46', 'E53N45'], //, 'E53N45'],
-            structures: {
+            rooms: ['E53N47', 'E52N47', 'E52N48'],
+            creeps: {
+                commoner: {
+                    count: 1
+                },
+                hauler: {
+                    count: 2
+                }
+            }
+        },
+        E53N45: {
+            rooms: ['E53N45', 'E53N44'],
+            creeps: {
+                commoner: {
+                    count: 2
+                },
+                hauler: {
+                    count: 3
+                }
             }
         }
     },
