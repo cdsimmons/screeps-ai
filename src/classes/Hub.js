@@ -1,3 +1,8 @@
+// Required modules
+var log = require('helpers/log');
+var config = require('config');
+var filter = require('helpers/filter');
+
 // Log
 log('Loading: classes/hub');
 
@@ -21,8 +26,6 @@ global.Hub = function(id) {
         log.cpu('Hub', 'end');
         return Game.hubs[id];
     } else {
-        const world = new World();
-
         // Init memory if necessary
         if(!Memory.hubs[id]) {
             Memory.hubs[id] = {};
@@ -43,8 +46,12 @@ global.Hub = function(id) {
         this.rooms = this.config.rooms;
 
         // Copying world properties and limiting to hub...
-        for(let property in world) {
-            this[property] = filter.byHub(world[property], this);
+        for(let property in Game) {
+            try {
+                this[property] = filter.byHub(Game[property], this);
+            } catch(e) {
+                // We are trying to filter the Game object items by roomName, but if that fails, oh well
+            }
         }
 
         // Storing in memory for later...

@@ -1,4 +1,9 @@
-global.config = {
+// Standard init
+var mod = {};
+mod.private = {};
+mod.public = {};
+
+mod.public = {
     hubs: {
         defaults: {
             rooms: [],
@@ -126,3 +131,5 @@ global.config = {
         }
     }
 };
+
+module.exports = mod.public;

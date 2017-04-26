@@ -1,3 +1,6 @@
+// Required modules
+var log = require('helpers/log');
+
 // Log
 log('Loading: classes/room');
 

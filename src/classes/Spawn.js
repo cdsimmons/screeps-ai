@@ -1,10 +1,14 @@
+// Required modules
+var log = require('helpers/log');
+var config = require('config');
+
 // Log
 log('Loading: classes/spawn');
 
 // Should be moved somewhere else... not sure where... perhaps into manage.js itself...
 Spawn.prototype.cleanup = function() {
     for(var i in Memory.creeps) {
-        if(!Game.creeps[i]) {
+        if(!Game.namedCreeps[i]) {
             delete Memory.creeps[i];
         }
     }
@@ -49,6 +53,7 @@ Spawn.prototype.isRegenerating = function() {
 Spawn.prototype.createCreepInQueue = function(forced = false) {
     // Sort the array so we have the highest priority creep first...
     if(this.memory.creationQueue && this.memory.creationQueue.length > 0) {
+        //log('creating...', this.room.name);
         // Sortby priority
         this.memory.creationQueue = _.sortBy(this.memory.creationQueue, (creep) => (creep.priority));
 
@@ -67,6 +72,11 @@ Spawn.prototype.createCreepInQueue = function(forced = false) {
         if(cando === OK) {
             this.memory.creationQueue.shift();
             return this.createCreep(creep.body, undefined, creep.memory);
+        }
+
+        // When bugged get rid of it...
+        if(cando === ERR_INVALID_ARGS) {
+            this.memory.creationQueue.shift();
         }
     }
 }
@@ -126,7 +136,7 @@ Spawn.prototype.isCreationQueued = function(memory) {
 Spawn.prototype.isCreating = function(memory) {
     if(this.spawning) {
         const name = this.spawning.name;
-        const creep = Game.creeps[name];
+        const creep = Game.namedCreeps[name];
 
         //log(creep.memory.hub, creep.memory.origin, _.where(creep.memory, memory).length);
 

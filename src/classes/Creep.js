@@ -1,3 +1,7 @@
+// Required modules
+var log = require('helpers/log');
+var config = require('config');
+
 // Log
 log('Loading: classes/creep');
 

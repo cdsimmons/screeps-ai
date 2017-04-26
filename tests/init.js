@@ -1,5 +1,5 @@
 // ADVG has good mock variables I can use... first I want to switch to requireJs
-{
+global = {
         FIND_EXIT_TOP: 1,
         FIND_EXIT_RIGHT: 3,
         FIND_EXIT_BOTTOM: 5,
