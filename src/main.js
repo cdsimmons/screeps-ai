@@ -19,7 +19,7 @@ require('classes/Tower');
 require('classes/Hub');
 
 // Giving all the hubs their default config values...
-for(const key in config.hubs) {
+for(var key in config.hubs) {
     if(key !== 'defaults') {
         _.defaults(config.hubs[key], config.hubs.defaults);
     }

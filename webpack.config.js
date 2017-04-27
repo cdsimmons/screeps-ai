@@ -1,18 +1,15 @@
 var webpack = require("webpack");
 
 module.exports = {
-	context: __dirname + '/src',
-	entry: './main.js',
 	output: {
 		filename: 'main.js',
-		path: __dirname + '/dist',
 		libraryTarget: 'var',
 		// This lets us access the bundle from outside... this means we can pass the loop to Screeps!
 		// We bundle for speed, and can still use CommonJS goodness :D
     	library: 'main' 
 	},
 	externals: {
-        lodash: '_',
+        // lodash: '_', // For test this needs to be external? Hmm... not sure!
         // http://screeps.wikia.com/wiki/Globals
         Game: 'Game',
         Memory: 'Memory',
@@ -25,15 +22,24 @@ module.exports = {
 		RoomPosition: 'RoomPosition',
 		Source: 'Source',
 		Spawn: 'Spawn',
-		Structure: 'Structure'
+		Structure: 'Structure',
+		// Others...
+		StructureTower: 'StructureTower'
     },
-	//devtool: 'eval',
 	// Prefer to resolve requires from base of app
 	resolve: {
-	    modules: [__dirname + '/src', 'node_modules'],
+	    modules: [__dirname + '/src', __dirname + '/test', 'node_modules'],
 	    alias: {
 		    log: 'helpers/log',
 		    config: 'config'
 	    }
-	}
+	},
+	// This gets overwritten in karma to be 'test'... not ideal, but having a lot of trouble with env variable for webpack
+	plugins: [
+	    new webpack.DefinePlugin({
+	        'process.env': {
+	            NODE_ENV: JSON.stringify('production')
+	        }
+	    })
+	]
 };

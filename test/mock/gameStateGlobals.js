@@ -1,5 +1,9 @@
-// ADVG has good mock variables I can use... first I want to switch to requireJs
-global = {
+'use strict';
+
+module.exports = function(reset) {
+    global._ = require('lodash');
+
+    global = _.merge(global, {
         FIND_EXIT_TOP: 1,
         FIND_EXIT_RIGHT: 3,
         FIND_EXIT_BOTTOM: 5,
@@ -179,6 +183,11 @@ global = {
         STRUCTURE_OBSERVER: 'observer',
         STRUCTURE_POWER_BANK: 'powerBank',
         STRUCTURE_POWER_SPAWN: 'powerSpawn',
+        STRUCTURE_EXTRACTOR: 'extractor',
+        STRUCTURE_LAB: 'lab',
+        STRUCTURE_TERMINAL: 'terminal',
+        STRUCTURE_CONTAINER: 'container',
+        STRUCTURE_NUKER: 'nuker',
 
         CONTROLLER_LEVELS: {
             1: 200,
@@ -347,8 +356,44 @@ global = {
 
         RESOURCE_ENERGY: 'energy',
         RESOURCE_POWER: 'power'
+    });
+    global.BODYPARTS_ALL = [MOVE, WORK, CARRY, ATTACK, RANGED_ATTACK, TOUGH, HEAL];
+
+    global.Game = {
+        'creeps': {},
+        'flags': {},
+        'rooms': {},
+        'spawns': {},
+        'structures': {},
+        'cpuLimit': Infinity
+    };
+
+    if (reset === true || typeof global.Memory !== 'object') {
+        global.Memory = {
+            'creeps': {},
+            'spawns': {},
+            'rooms': {}
+        };
     }
 
-Game = {};
-
-Game.creeps = 'raa';
+    global.ConstructionSite = function() {};
+    global.Creep = function() {};
+    global.Energy = function() {};
+    global.Flag = function() {};
+    global.Map = function() {};
+    global.Room = function(name) {
+        this.name = name;
+        this.find = function() {};
+    };
+    global.RoomPosition = function(x, y, roomName) {
+        this.x = x;
+        this.y = y;
+        this.roomName = roomName;
+    };
+    global.Source = function() {};
+    global.Spawn = function() {};
+    global.Structure = function() {};
+    global.StructureTower = function() {};
+    
+    require('./screeps/Game.js');
+};
