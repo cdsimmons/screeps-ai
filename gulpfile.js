@@ -13,14 +13,7 @@ var watching = false;
 var root = 'src';
 var output = 'dist';
 var test = 'test';
-//var validationCode = 0;
-
-server = new KarmaServer({
-        configFile: __dirname + '/karma.conf.js',
-        singleRun: true
-    }, function(exitCode) {
-        done(exitCode);
-    });
+var webpackConfig = require('./webpack.config');
 
 // Map all paths
 var paths = {
@@ -28,40 +21,37 @@ var paths = {
 	src: root + '/**/*.js',
 	dist: output + '/**/*.js',
 	tests: test + '/**/*.test.js',
+	mockAndTests: test + '/**/*',
 	game: 'C:/Users/Carl/AppData/Local/Screeps/scripts/screeps.com' // Location of the game assets...
 }
 
 // Check the code
 gulp.task('lint', function(done) {
-	return gulp.src(paths.entry)
+	return gulp.src([paths.src, paths.tests])
 		.pipe(eslint({
-			"rules":{
-		        "camelcase": 1,
-		        "comma-dangle": 2,
-		        "quotes": 0
+			'rules':{
+		        'camelcase': 1,
+		        'comma-dangle': 2,
+		        'quotes': 0
 		    },
-	        globals: [
-	            '_'
-	        ],
-	        envs: [
-	            'browser'
-	        ]
+	        globals: ['_'],
+	        envs: ['es6', 'browser']
 	    }))
 	    .pipe(eslint.format())
 	    .pipe(eslint.failAfterError());
 });
 
-// Bundle up with webpack
-gulp.task('compile', ['lint'], function(done) {
-	return gulp.src(paths.entry)
-		.pipe(plumber())
-		.pipe(webpackStream(require('./webpack.config'), webpack2))
-		.pipe(inject.append('\nmodule.exports.loop = main.loop;'))
-    	.pipe(gulp.dest(output));
-});
-
 // Single run of the tests...
-gulp.task('test', function(done) {
+gulp.task('test', ['lint'], function(done) {
+	// Overwrite environment var for webpack...
+	webpackConfig.plugins = [
+	    new webpack2.DefinePlugin({
+	        'process.env': {
+	            NODE_ENV: JSON.stringify('test')
+	        }
+	    })
+	]
+
 	// This is keeping node running...
 	new KarmaServer({
         configFile: __dirname + '/karma.conf.js',
@@ -78,17 +68,43 @@ gulp.task('test', function(done) {
         	}
         }
 
-        // Kind of annoyed by the error log, but if I don't do this, then it'll just continue on or pause and stop watching
-        done(exitCode);
-
-        // Have a small issue now... if watching, tests fail, but we're still marking as done...
+        // Assumption is that master branch is live branch... we will stop distribution... for dev no need
+		git.branch(function (str) {
+	        if(str === 'master') {
+	        	done(exitCode);
+	        } else {
+	        	done();
+	        }
+		});
     }).start();
+});
+
+// Bundle up with webpack
+gulp.task('compile', ['test'], function(done) {
+	// Overwrite environment var for webpack...
+	// I can improve this... just like how gameStateStart is called as a function...
+	// I keep forgetting that require is basically like injecting the JS straight in... 
+	// I require the object atm, but I can make it a function which returns an object and call that...
+	// If I do that, I can just pass an env variable! :D
+	webpackConfig.plugins = [
+	    new webpack2.DefinePlugin({
+	        'process.env': {
+	            NODE_ENV: JSON.stringify('production')
+	        }
+	    })
+	]
+
+	return gulp.src(paths.entry)
+		.pipe(plumber())
+		.pipe(webpackStream(webpackConfig, webpack2))
+		.pipe(inject.append('\nmodule.exports.loop = main.loop;'))
+    	.pipe(gulp.dest(output));
 });
 
 // We copy the file into a folder with the name set to current branch...
 // Bit of a simple way to manage distribution and helps force us to work with the right branches...
 // Obviously for a more important project, things would not be done this way
-gulp.task('distribute', ['test'], function(done) {
+gulp.task('distribute', ['compile'], function(done) {
 	// Not ending gulp task...
 	git.branch(function (str) {
 		gulp.src(paths.dist)
@@ -105,30 +121,15 @@ gulp.task('distribute', ['test'], function(done) {
 });
 
 // Watch for changes
-gulp.task('watch', ['compile'], function() {
+gulp.task('watch', function() {
 	watching = true;
 
 	// Watch for source to compile it...
-	gulp.watch([paths.src], ['compile']);
-	// Watch for dist changes to distribute to game...
-	gulp.watch([paths.dist], ['distribute']);
+	gulp.watch([paths.src], ['distribute']);
 	// Watch for test file changes... tdd...
-	gulp.watch([paths.tests], ['test']);
+	gulp.watch([paths.mockAndTests], ['test']);
 
-	// Trying to stop tests running twice... if watching, I want to use this for testing... maybe this should distribute after test or something...
-
-	// I could do singleRun on test file change...
-
-	// Tdd... watch for test updates and check against code...
-	// if(!server) {
-	//     server = new KarmaServer({
-	//         configFile: __dirname + '/karma.conf.js',
-	// 		singleRun: false,
-	// 		autoWatch: true
-	//     });
-	// }
-
- //    server.start();
+	gulp.start('compile');
 });
 
 // Our usual build task...

@@ -1,13 +1,10 @@
-// Require the classes...
-// Is it possible to just require them where I need them?
-// We already have global classes for Screeps, so it would be a bit strange to include Hub, and not include others when needed...
-// I'll just require here for now...
+// Require helpers...
 //var _ = require('lodash');
 var config = require('config');
 var log = require('helpers/log');
-var populator = require('helpers/populator');
 var monitor = require('helpers/monitor');
 var manage = require('manager/manage');
+var populator = require('helpers/populator');
 
 // Classes... just like with lodash, it might be worth refactoring these so they are not globals...
 // Would do this by the classes as externals within webpack and then requiring...
@@ -15,30 +12,22 @@ var manage = require('manager/manage');
 require('classes/Room');
 require('classes/Spawn');
 require('classes/Creep');
-require('classes/Tower');
 require('classes/Hub');
-
-// Giving all the hubs their default config values...
-for(var key in config.hubs) {
-    if(key !== 'defaults') {
-        _.defaults(config.hubs[key], config.hubs.defaults);
-    }
-}
-
-// // Now remove the defaults, as we no longer need them...
-delete config.hubs.defaults;
+require('classes/StructureTower');
+// Include command...
+require('helpers/command');
 
 // Logging
 log('State: main - Initialized');
 
 // The looop
 var loop = function () {
+    // Prepare global variables every loop...
+    populator.init = false;
+    populator.all();
+
     // Cpu before
     log.cpu('///////////// start', 'start');
-
-    // Populate the Game object for us
-    populator.reassign();
-    populator.populate();
 
     // Manage everything...
     manage.all();

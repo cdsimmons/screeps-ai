@@ -48,7 +48,7 @@ mod.public = {
             rooms: ['E53N45', 'E53N44'],
             creeps: {
                 commoner: {
-                    count: 2
+                    count: 1
                 },
                 hauler: {
                     count: 3

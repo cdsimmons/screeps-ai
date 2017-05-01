@@ -1,6 +1,15 @@
 'use strict';
 
-/* globals performance:true*/
+global.Game = {
+    'creeps': {},
+    'flags': {},
+    'rooms': {},
+    'spawns': {},
+    'structures': {},
+    'cpuLimit': Infinity
+};
+
+/* CPU Dummy */
 var time = typeof performance === 'object' && performance.now ? performance.now() : new Date();
 
 Game.cpu = function() {

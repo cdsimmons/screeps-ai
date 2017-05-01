@@ -1,0 +1,35 @@
+[
+   {
+      "room":{
+         "name":"sim",
+         "mode":"simulation",
+         "energyAvailable":3900,
+         "energyCapacityAvailable":3900,
+         "survivalInfo":{
+            "mode":"survival",
+            "status":"active",
+            "user":"57e022e0adafdf710cbf557b",
+            "score":0,
+            "timeToWave":200,
+            "wave":1,
+            "survivalEnabled":true,
+            "invaders":{
+               "bodies":[
+
+               ]
+            }
+         },
+         "visual":{
+            "roomName":"sim"
+         }
+      },
+      "pos":{
+         "x":20,
+         "y":30,
+         "roomName":"sim"
+      },
+      "id":"086e3d82ed431f9dab9009c8",
+      "timeToLand":15963,
+      "launchRoomName":"sim"
+   }
+]

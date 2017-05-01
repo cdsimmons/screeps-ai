@@ -11,12 +11,12 @@ var mod = {};
 mod.private = {};
 mod.public = {};
 
-if(!Memory.timeout) {
-	Memory.timeout = {};
-}
-
 // delayed('key', 10);... return true if delayed, false if not...
 mod.public.waiting = function(key, delay = 5) {
+    if(!Memory.timeout) {
+        Memory.timeout = {};
+    }
+
     // If the delay exists and we've waited long enough then it's not delayed
 	if(Memory.timeout[key] !== undefined) {
         if(Game.time > Memory.timeout[key].delayedUntil) {

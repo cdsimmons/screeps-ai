@@ -12,12 +12,12 @@ global.Hub = function(id) {
     log.cpu('Hub', 'start');
 
     // Initiate global hubs if undefined...
-    if(Game.hubs === undefined) {
+    if(!Game.hubs) {
         Game.hubs = {};
     }
 
     // Initiate global Memory for hubs
-    if(Memory.hubs === undefined) {
+    if(!Memory.hubs) {
         Memory.hubs = {};
     }
 
@@ -50,7 +50,7 @@ global.Hub = function(id) {
             try {
                 this[property] = filter.byHub(Game[property], this);
             } catch(e) {
-                // We are trying to filter the Game object items by roomName, but if that fails, oh well
+                // We are trying to filter the Game object items by roomName, but if that fails (such as it has no roomName), oh well
             }
         }
 
@@ -60,3 +60,5 @@ global.Hub = function(id) {
     
     log.cpu('Hub', 'end');
 }
+
+// Extend hub proto for equalizer

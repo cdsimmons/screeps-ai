@@ -1,0 +1,49 @@
+{
+   "Spawn1":{
+      "room":{
+         "name":"sim",
+         "mode":"simulation",
+         "energyAvailable":59,
+         "energyCapacityAvailable":1000,
+         "survivalInfo":{
+            "mode":"survival",
+            "status":"active",
+            "user":"57e022e0adafdf710cbf557b",
+            "score":0,
+            "timeToWave":200,
+            "wave":1,
+            "survivalEnabled":true,
+            "invaders":{
+               "bodies":[
+
+               ]
+            }
+         },
+         "visual":{
+            "roomName":"sim"
+         }
+      },
+      "pos":{
+         "x":25,
+         "y":23,
+         "roomName":"sim"
+      },
+      "id":"508985d91219c45ff6874077",
+      "name":"Spawn1",
+      "energy":2,
+      "energyCapacity":300,
+      "spawning":{
+         "name":"Alexis",
+         "needTime":9,
+         "remainingTime":7
+      },
+      "owner":{
+         "username":"PlayerName"
+
+      },
+      "my":true,
+      "hits":5000,
+      "hitsMax":5000,
+      "structureType":"spawn"
+   }
+}

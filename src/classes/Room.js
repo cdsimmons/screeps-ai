@@ -4,19 +4,20 @@ var log = require('helpers/log');
 // Log
 log('Loading: classes/room');
 
-Room.prototype.getSurroundingArea = function(point) { // Calculate the slots physically available
-    var area = this.lookAtArea(point.pos.y-1, point.pos.x-1, point.pos.y+1, point.pos.x+1, true);
-    
-    return slots
+// Pass back tiles
+Room.prototype.getSurroundingArea = function(target) {
+    var area = this.lookAtArea(target.pos.y-1, target.pos.x-1, target.pos.y+1, target.pos.x+1, true);
+    return area;
 }
 
-Room.prototype.getSurroundingTerrain = function(point) { // Calculate the slots physically available
-    var area = this.lookAtArea(point.pos.y-1, point.pos.x-1, point.pos.y+1, point.pos.x+1, true);
-    var slots = _.countBy(area, function(area) {
-        return area.terrain;
+// Calculate the slots physically available
+Room.prototype.getSurroundingTerrain = function(target) { 
+    var area = this.getSurroundingArea(target);
+    var slots = _.filter(area, function(tile) {
+        return tile.type === LOOK_TERRAIN;
     });
     
-    return slots
+    return slots;
 }
 
 Room.prototype.isFull = function() {

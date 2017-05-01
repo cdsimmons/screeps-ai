@@ -7,8 +7,8 @@ log('Loading: classes/tower');
 
 StructureTower.prototype.actionIsWork = function() {
     // Currently harvest is marked as taking work... which is partly true, but a miner won't ever reach capacity so doesn't fit with logic later
-    if(this.memory.destination && this.memory.destination.action) {
-        return _.contains(config.actions.work, this.memory.destination.action);
+    if(this.memory.destination && this.memory.destination.method) {
+        return _.contains(config.actions.work, this.memory.destination.method);
     } else {
         return false;
     }
@@ -20,15 +20,15 @@ StructureTower.prototype.getActionRange = function() {
 }
 
 StructureTower.prototype.hasBodyPart = function(part) {
-    return _.contains(['attack', 'rangedAttack', 'heal', 'rangedHeal', 'repair'], part);
-}
-
-StructureTower.prototype.isFull = function() {
-    return (this.energy === this.energyCapacity);
+    return _.contains([ATTACK, RANGED_ATTACK, HEAL, WORK, CARRY], part);
 }
 
 StructureTower.prototype.isEmpty = function() {
     return (this.energy === 0);
+}
+
+StructureTower.prototype.isFull = function() {
+    return (this.energy === this.energyCapacity);
 }
 
 StructureTower.prototype.isStale = function() {
@@ -51,17 +51,17 @@ StructureTower.prototype.isStale = function() {
     return this.memory.isStale;
 }
 
-StructureTower.prototype.transitioned = function() {
-    return false;
-}
-
-StructureTower.prototype.say = function(string) {
-    log('Tower says... '+string);
-}
-
 StructureTower.prototype.moveTo = function(string) {
     // Just patching for Creep treatment...
     // Tower is nuts if it tries to move, so clear it's assignment and destination...
     delete this.memory.assignment;
     delete this.memory.destination;
+}
+
+StructureTower.prototype.say = function(string) {
+    return log('Tower says... '+string);
+}
+
+StructureTower.prototype.transitioned = function() {
+    return false;
 }

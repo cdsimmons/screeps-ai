@@ -15,17 +15,10 @@ mod.public = {};
 * SINGULARS
 */
 
-// Check if what we have actually exists in the game... eg rooms we have sight to
-mod.public.byGameExistence = function(targets, key) {
-    var result = _.filter(targets, (target) => (Game[key][target] !== undefined));
-
-    return result;
-}
-
 // Return targets with ID
 // Unlike get object by ID, this can work with name as ID too...
 mod.public.byId = function(targets, id) {
-    var result = _.filter(targets, (target) => (target.id === id || target.name === id));
+    var result = _.filter(targets, (target) => (target.id === id || target.name === id))[0];
 
     return result;
 }
@@ -43,14 +36,14 @@ mod.public.byAmount = function(targets, from, to) {
 
 // Filter by alive...
 mod.public.byAlive = function(targets) {
-    var result = _.filter(targets, (target) => (target.my && targets.hits > 0) );
+    var result = _.filter(targets, (target) => (target.my && target.hits > 0) );
 
     return result;
 }
 
 // Filter by assignment ID...
 mod.public.byAssignmentId = function(targets, id) {
-    var result = _.filter(targets, (target) => (target.memory.assignment === id));
+    var result = _.filter(targets, (target) => (target.memory.assignment && target.memory.assignment.target.id === id));
     return result;
 }
 
@@ -131,6 +124,13 @@ mod.public.byColors = function(targets, primary, secondary) {
     return targets;
 }
 
+// Check if what we have actually exists in the game... eg rooms we have sight to
+mod.public.byGameExistence = function(targets, key) {
+    var result = _.filter(targets, (target) => (Game[key][target] !== undefined));
+
+    return result;
+}
+
 // Filter all the targets that have assignees
 mod.public.byHasAssignee = function(targets, method) {
     // Get all the game creeps so we know their current destinations
@@ -168,7 +168,16 @@ mod.public.byHasAssignment = function(targets, method) {
 }
 
 // Filter by has controller in the room...
-mod.public.byHasController = function(targets) {
+mod.public.byHasController = function(targets, label) {
+    // try {
+    //     console.log('running...');
+    //     console.log(JSON.stringify(targets[0]));
+    //     console.log(targets[0].pos.roomName);
+    //     console.log(Game.controllers, _.pluck(_.pluck(Game.controllers, 'pos'), 'roomName'));
+    // } catch(e) {
+
+    // }
+            //console.log(target.pos.roomName, roomNames, _.contains(roomNames, target.pos.roomName));
     let result = mod.public.bySameRooms(targets, _.pluck(_.pluck(Game.controllers, 'pos'), 'roomName'));
 
     return result;
@@ -360,12 +369,6 @@ mod.public.byPrimaryColor = function(targets, color) {
 mod.public.byRange = function(targets, pos, range) {
     var result = _.filter(targets, (target) => (pos.inRangeTo(target, range)));
 
-    return result;
-}
-
-// The usage for this would be to filter flags for example by what hub/array of room Ids, they're in...
-mod.public.byRoomIds = function(targets, roomIds) {
-    var result = _.filter(targets, (target) => (_.contains(roomIds, target.pos.roomName)));
     return result;
 }
 

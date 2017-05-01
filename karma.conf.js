@@ -6,15 +6,6 @@ var webpackConfig = require('./webpack.config');
 var testGlob = 'test/**/*.test.js';
 var srcGlob = 'src/main.js';
 
-// Other ways to pass in env variable into webpack2, but this works
-webpackConfig.plugins = [
-    new webpack.DefinePlugin({
-        'process.env': {
-            NODE_ENV: JSON.stringify('test')
-        }
-    })
-]
-
 // Karma config...
 module.exports = function(config) {
   config.set({
@@ -24,7 +15,7 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'chai'],
+    frameworks: ['mocha', 'chai-things', 'chai'],
 
 
     // list of files / patterns to load in the browser

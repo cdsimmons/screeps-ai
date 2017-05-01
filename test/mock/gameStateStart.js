@@ -1,180 +1,66 @@
 'use strict';
 
 module.exports = function(reset) {
+    console.log('Reset Game State');
+    
     require('./gameStateGlobals.js')(reset === undefined ? true : reset);
 
-    Game.creeps = {
-        
-    };
-    
-    Game.rooms = {
-        "sim": {}//new Room('sim')
-    };
-
-    Game.spawns = {
-        "Spawn1": {
-            "id": "id219970",
-            "name": "Spawn1",
-            "pos": {
-                "x": 3,
-                "y": 39,
-                "roomName": "1-1"
-            },
-            "owner": {
-                "username": "Player 0"
-            },
-            "my": true,
-            "structureType": "spawn",
-            "spawning": null,
-            "energy": 1000,
-            "energyCapacity": 6000,
-            "hits": 5000,
-            "hitsMax": 5000,
-            "memory": {},
-            "room": {
-              "name": "1-1"
-            }
-        }
-    };
-
-    Game.structures = {
-        "id564640": {
-            "id": "id564640",
-            "pos": {
-                "x": 2,
-                "y": 38,
-                "roomName": "1-1"
-            },
-            "hits": 1500,
-            "hitsMax": 1500,
-            "user": 0,
-            "my": true,
-            "structureType": "rampart",
-            "room": {
-                "name": "1-1"
-            }
-        },
-        "id659170": {
-            "id": "id659170",
-            "pos": {
-                "x": 2,
-                "y": 39,
-                "roomName": "1-1"
-            },
-            "hits": 1500,
-            "hitsMax": 1500,
-            "user": 0,
-            "my": true,
-            "structureType": "rampart",
-            "room": {
-                "name": "1-1"
-            }
-        },
-        "id69030": {
-            "id": "id69030",
-            "pos": {
-                "x": 2,
-                "y": 40,
-                "roomName": "1-1"
-            },
-            "hits": 1500,
-            "hitsMax": 1500,
-            "user": 0,
-            "my": true,
-            "structureType": "rampart",
-            "room": {
-                "name": "1-1"
-            }
-        },
-        "id582900": {
-            "id": "id582900",
-            "pos": {
-                "x": 3,
-                "y": 38,
-                "roomName": "1-1"
-            },
-            "hits": 1500,
-            "hitsMax": 1500,
-            "user": 0,
-            "my": true,
-            "structureType": "rampart",
-            "room": {
-                "name": "1-1"
-            }
-        },
-        "id369230": {
-            "id": "id369230",
-            "pos": {
-                "x": 3,
-                "y": 40,
-                "roomName": "1-1"
-            },
-            "hits": 1500,
-            "hitsMax": 1500,
-            "user": 0,
-            "my": true,
-            "structureType": "rampart",
-            "room": {
-                "name": "1-1"
-            }
-        },
-        "id142110": {
-            "id": "id142110",
-            "pos": {
-                "x": 4,
-                "y": 38,
-                "roomName": "1-1"
-            },
-            "hits": 1500,
-            "hitsMax": 1500,
-            "user": 0,
-            "my": true,
-            "structureType": "rampart",
-            "room": {
-                "name": "1-1"
-            }
-        },
-        "id789500": {
-            "id": "id789500",
-            "pos": {
-                "x": 4,
-                "y": 39,
-                "roomName": "1-1"
-            },
-            "hits": 1500,
-            "hitsMax": 1500,
-            "user": 0,
-            "my": true,
-            "structureType": "rampart",
-            "room": {
-                "name": "1-1"
-            }
-        },
-        "id385750": {
-            "id": "id385750",
-            "pos": {
-                "x": 4,
-                "y": 40,
-                "roomName": "1-1"
-            },
-            "hits": 1500,
-            "hitsMax": 1500,
-            "user": 0,
-            "my": true,
-            "structureType": "rampart",
-            "room": {
-                "name": "1-1"
-            }
-        }
-    };
-
-    Game.flags = {};
+    // Object population... exported from simulation
+    Game.creeps = require('./objects/Game.creeps');
+    Game.rooms = require('./objects/Game.rooms');
+    Game.spawns = require('./objects/Game.spawns');
+    Game.flags = require('./objects/Game.flags');
+    Game.structures = require('./objects/Game.structures');
+    Game.constructionSites = require('./objects/Game.constructionSites');
     Game.time = 1;
 
-    Memory.spawns.Spawn1 = {};
+    Memory = require('./objects/Memory');
 
+    // We import the objects, but not the functions etc, so we have to assigned that here...
+    for(var key in Game.creeps) {
+        _.extend(Game.creeps[key], new Creep(key));
+        // Make sure the we have the right prototype for the object...
+        Object.setPrototypeOf(Game.creeps[key], Creep.prototype);
+    }
 
-    //
-    Object.setPrototypeOf(Game.rooms.sim, new Room('sim'));
-    //Game.rooms.sim.__proto__ = new Room('sim');
+    for(var key in Game.rooms) {
+        _.extend(Game.rooms[key], new Room(key));
+        // Make sure the we have the right prototype for the object...
+        Object.setPrototypeOf(Game.rooms[key], Room.prototype);
+    }
+
+    for(var key in Game.spawns) {
+        _.extend(Game.spawns[key], new Spawn(key));
+        // Make sure the we have the right prototype for the object...
+        Object.setPrototypeOf(Game.spawns[key], Spawn.prototype);
+    }
+
+    for(var key in Game.flags) {
+        _.extend(Game.flags[key], new Flag(key));
+        // Make sure the we have the right prototype for the object...
+        Object.setPrototypeOf(Game.flags[key], Flag.prototype);
+    }
+
+    for(var key in Game.structures) {
+        _.extend(Game.structures[key], new Structure(key));
+        // Make sure the we have the right prototype for the object...
+        Object.setPrototypeOf(Game.structures[key], Structure.prototype);
+    }
+
+    for(var key in Game.constructionSites) {
+        _.extend(Game.constructionSites[key], new ConstructionSite(key));
+        // Make sure the we have the right prototype for the object...
+        Object.setPrototypeOf(Game.constructionSites[key], ConstructionSite.prototype);
+    }
+
+    // Build up other Game objects... normally done in the main.js game loop...
+    require('helpers/populator').all();
+
+    // We've added new objects to the Game object after populator
+    // So need to make sure these have their prototypes defined too where necessary
+    for(var key in Game.towers) {
+        _.extend(Game.towers[key], new StructureTower(key));
+        // Make sure the we have the right prototype for the object...
+        Object.setPrototypeOf(Game.towers[key], StructureTower.prototype);
+    }
 };

@@ -1,11 +1,15 @@
-// Initialise environment...
-require('mock/gameStateStart')();
+// Need globals constants and stuff (log relies on this)
+require('mock/gameStateGlobals.js')();
 
 // Object itself
 var log = require('helpers/log');
 
 // Tests
 describe('helpers/log', function() {
+	before(function (){
+		require('mock/gameStateStart')();
+	});
+
 	it('exists', function(){
 		expect(log).to.exist;
 	});
@@ -14,7 +18,7 @@ describe('helpers/log', function() {
 		expect(log.private.indent).to.equal(0);
 	});
 
-	it('should private.buildLog()', function(){
+	it('should build the log string with buildLog()', function(){
 		// String
 		expect(log.private.buildLog('test')).to.have.string('Default:');
 		expect(log.private.buildLog('test')).to.have.string('test');
@@ -23,7 +27,7 @@ describe('helpers/log', function() {
 		expect(log.private.buildLog({'test': 'test'})).to.equal('{"test":"test"}'); //
 	});
 
-	it('should private.buildCpu()', function(){
+	it('should build the CPU string with buildCpu()', function(){
 		expect(log.private.buildCpu('test')).to.have.string('CPU:');
 		expect(log.private.buildCpu('test')).to.have.string('test');
 	});

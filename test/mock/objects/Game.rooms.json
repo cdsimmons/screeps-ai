@@ -1,0 +1,25 @@
+{
+   "sim":{
+      "name":"sim",
+      "mode":"simulation",
+      "energyAvailable":59,
+      "energyCapacityAvailable":1000,
+      "survivalInfo":{
+         "mode":"survival",
+         "status":"active",
+         "user":"57e022e0adafdf710cbf557b",
+         "score":0,
+         "timeToWave":200,
+         "wave":1,
+         "survivalEnabled":true,
+         "invaders":{
+            "bodies":[
+
+            ]
+         }
+      },
+      "visual":{
+         "roomName":"sim"
+      }
+   }
+}

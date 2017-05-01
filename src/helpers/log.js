@@ -49,7 +49,8 @@ mod.private.buildCpu = function(label) {
 
 // Attach public functions
 mod.public = function(...things) {
-    if(process.env.NODE_ENV !== 'test') {
+    var test = process.env.NODE_ENV; // This becomes test when running gulp?
+    if(process.env.NODE_ENV === 'production') {
         things.forEach(function (thing) {
             console.log(mod.private.buildLog(thing));
         });
@@ -69,7 +70,7 @@ mod.public.cpu = function(label, position) {
         mod.private.indent--;
     }
 
-    if(process.env.NODE_ENV !== 'test') {
+    if(process.env.NODE_ENV === 'production') {
         console.log(mod.private.buildCpu(label));
     }
     

@@ -10,12 +10,6 @@ var mod = {};
 mod.private = {};
 mod.public = {};
 
-// TODO - Filter the targets limiting by distance...
-// Map.getRoomLinearDistance(roomName1, roomName2)
-mod.public.byDistance = function(targets, target, to) {
-
-}
-
 // Return target with lowest hits percentage
 mod.public.byLowestHitsPercentage = function(targets) {
     var result = _.sortBy(targets, (target) => {
@@ -26,8 +20,6 @@ mod.public.byLowestHitsPercentage = function(targets) {
             return target.hits / target.hitsMax;
         }
     });
-
-    //log(_.pluck(result, 'hits'));
 
     return result;
 }
@@ -66,7 +58,7 @@ mod.public.byAmount = function(targets) {
 	return result;
 }
 
-// Sort by amount... eg spills
+// Sort by lowest level... eg spills
 mod.public.byLowestLevel = function(targets) {
     var result = _.sortBy(targets, (target) => (target.level));
 

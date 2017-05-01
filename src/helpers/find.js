@@ -3,7 +3,7 @@ var config = require('config');
 var log = require('helpers/log');
 var find = require('helpers/find');
 var filter = require('helpers/filter');
-var cacher = require('helpers/cacher');
+var cache = require('helpers/cache');
 var sort = require('helpers/sort');
 
 // Log
@@ -18,8 +18,8 @@ mod.public = {};
 mod.public.banks = function() {
     // Pass if we already calculated this...
     if(Game.banks === undefined) {
-        if(cacher.retrieve('banks')) {
-            Game.banks = cacher.retrieve('banks');
+        if(cache.retrieve('banks')) {
+            Game.banks = cache.retrieve('banks');
         } else {
             // Get all the flags for sources...
             var flags = mod.public.flags();
@@ -39,7 +39,7 @@ mod.public.banks = function() {
             // Filter out the structures so we only have stores...
             Game.banks = filter.byStructureTypes(Game.banks, [STRUCTURE_CONTAINER, STRUCTURE_STORAGE, STRUCTURE_LINK]);
 
-            cacher.store('banks', Game.banks);
+            cache.store('banks', Game.banks);
         }
     }
 
@@ -73,8 +73,8 @@ mod.public.creeps = function() {
 // CPU spikes, so we're going to use a bit of caching to help mitigate
 mod.public.damagedStructures = function() {
     if(Game.damagedStructures === undefined) {
-        if(cacher.retrieve('damagedStructures')) {
-            Game.damagedStructures = cacher.retrieve('damagedStructures');
+        if(cache.retrieve('damagedStructures')) {
+            Game.damagedStructures = cache.retrieve('damagedStructures');
         } else {
             // Get all the structures in room
             Game.damagedStructures = mod.public.structures();
@@ -86,7 +86,7 @@ mod.public.damagedStructures = function() {
             // Sorting here... wouldn't normally but it's efficient caching this way...
             Game.damagedStructures = sort.byLowestHitsPercentage(Game.damagedStructures);
 
-            cacher.store('damagedStructures', Game.damagedStructures);
+            cache.store('damagedStructures', Game.damagedStructures);
         }
     }
 
@@ -98,15 +98,15 @@ mod.public.damagedStructures = function() {
 // Get decaying sites
 mod.public.decayingStructures = function() {
     if(Game.decayingStructures === undefined) {
-        if(cacher.retrieve('decayingStructures')) {
-            Game.decayingStructures = cacher.retrieve('decayingStructures');
+        if(cache.retrieve('decayingStructures')) {
+            Game.decayingStructures = cache.retrieve('decayingStructures');
         } else {
             // Get all the structures in room
             Game.decayingStructures = mod.public.structures();
             // Filter
             Game.decayingStructures = _.filter(Game.decayingStructures, (target) => (target.ticksToDecay !== undefined));
 
-            cacher.store('decayingStructures', Game.decayingStructures);
+            cache.store('decayingStructures', Game.decayingStructures);
         }
     }
 
@@ -118,8 +118,8 @@ mod.public.decayingStructures = function() {
 // Find imminent nukes...
 mod.public.imminentNukes = function() {
     if(Game.imminentNukes === undefined) {
-        if(cacher.retrieve('imminentNukes')) {
-            Game.imminentNukes = cacher.retrieve('imminentNukes');
+        if(cache.retrieve('imminentNukes')) {
+            Game.imminentNukes = cache.retrieve('imminentNukes');
         } else {
             // Filter by has controller...
             let rooms = mod.public.rooms(); // Need to look everywhere I think, since we want to watch everything for hostiles...
@@ -136,12 +136,13 @@ mod.public.imminentNukes = function() {
             }
 
             // Filter out those that are within 10k landing time...
-            //Game.imminentNukes = _.filter(Game.imminentNukes, (target) => (target.timeToLand < 19000));
+            Game.imminentNukes = _.filter(Game.imminentNukes, (target) => (target.timeToLand < 19000));
 
-            // Store for 5k ticks... so the latest response we get is at 15k
+            // TODO
+            // Store for 5k ticks... so the latest response we get is at 14k
             // This is not so great... what if there is 2 nukes within 1 tick of each other?
-            // I need to activate safe mode just before a nuke is landing I think, and then pop it and replace in cacher...
-            cacher.store('imminentNukes', Game.imminentNukes, 4999);
+            // I need to activate safe mode just before a nuke is landing I think, and then pop it and replace in cache...
+            cache.store('imminentNukes', Game.imminentNukes, 4999);
         }
     }
 
@@ -216,7 +217,7 @@ mod.public.hubId = function(target) {
 mod.public.hubIds = function() {
     var targets = Object.keys(config.hubs);
     // Making sure we have access to the rooms
-    targets = filter.byGameExistence(targets, 'rooms');
+    targets = filter.byGameExistence(targets, 'namedRooms');
 
     return targets;
 }
@@ -232,26 +233,11 @@ mod.public.hubRoomIds = function() {
     return targets;
 }
 
-// Return all hub rooms objects
-mod.public.rooms = function() {
-    // var targets = mod.public.hubRoomIds();
-    // // Pick out rooms
-    // targets = _.map(targets, (target) => (Game.rooms[target]));
-    // // Remove ones we don't have access to...
-    // targets = _.compact(targets);
-
-    // This was looking through all of the hub rooms... removing this restriction
-
-    var targets = _.map(Game.rooms, (room) => (room));
-
-    return targets;
-}
-
 // Low energy structures...
 mod.public.lowEnergyStructures = function() {
     if(Game.lowEnergyStructures === undefined) {
-        if(cacher.retrieve('lowEnergyStructures')) {
-            Game.lowEnergyStructures = cacher.retrieve('lowEnergyStructures');
+        if(cache.retrieve('lowEnergyStructures')) {
+            Game.lowEnergyStructures = cache.retrieve('lowEnergyStructures');
         } else {
             Game.lowEnergyStructures = mod.public.structures();
             Game.lowEnergyStructures = _.filter(Game.lowEnergyStructures, (target) => {
@@ -269,7 +255,7 @@ mod.public.lowEnergyStructures = function() {
                 return (filter.byCapacityPercentage([target], 0, 99).length > 0);
             });
 
-            cacher.store('lowEnergyStructures', Game.lowEnergyStructures);
+            cache.store('lowEnergyStructures', Game.lowEnergyStructures);
         }
     }
 
@@ -278,14 +264,22 @@ mod.public.lowEnergyStructures = function() {
     return targets;
 }
 
-// Get all the nodes (sources + resources... anything mineable basically)
-mod.public.nodes = function() {
-    // Kind of caching... making sure we reuse already calculated objects...
-    if(Game.nodes === undefined) {
-        Game.nodes = mod.public.sources(); // Will later combine with resources...
+// Get decaying sites
+mod.public.nukers = function() {
+    if(Game.nukers === undefined) {
+        if(cache.retrieve('nukers')) {
+            Game.nukers = cache.retrieve('nukers');
+        } else {
+            // Get all the structures in room
+            Game.nukers = mod.public.structures();
+            // Filter
+            Game.nukers = _.filter(Game.nukers, (target) => (target.structureType === STRUCTURE_NUKER));
+
+            cache.store('nukers', Game.nukers);
+        }
     }
 
-    var targets = Game.nodes;
+    var targets = Game.nukers;
 
     return targets;
 }
@@ -293,6 +287,21 @@ mod.public.nodes = function() {
 // Get roads
 mod.public.roads = function() {
     var targets = filter.byStructureTypes(mod.public.structures(), [STRUCTURE_ROAD]);
+
+    return targets;
+}
+
+// Return all hub rooms objects
+mod.public.rooms = function() {
+    // var targets = mod.public.hubRoomIds();
+    // // Pick out rooms
+    // targets = _.map(targets, (target) => (Game.rooms[target]));
+    // // Remove ones we don't have access to...
+    // targets = _.compact(targets);
+
+    // This was looking through all of the hub rooms... removing this restriction
+
+    var targets = _.map(Game.rooms, (room) => (room));
 
     return targets;
 }
@@ -333,8 +342,8 @@ mod.public.structures = function() {
         Game.structures = _.map(Game.structures, (structure) => (structure));
 
         // Adding roads and walls... trying to use cache if we have it since we don't care about old stuff really
-        if(cacher.retrieve('allAdditionalStructures')) {
-            Game.structures = _.union(Game.structures, cacher.retrieve('allAdditionalStructures'));
+        if(cache.retrieve('allAdditionalStructures')) {
+            Game.structures = _.union(Game.structures, cache.retrieve('allAdditionalStructures'));
         } else {
             const rooms = mod.public.rooms();
             let allAdditionalStructures = [];
@@ -354,7 +363,7 @@ mod.public.structures = function() {
 
             // Store in cache and add to Game.structures...
             Game.structures = _.union(Game.structures, allAdditionalStructures);
-            cacher.store('allAdditionalStructures', allAdditionalStructures);
+            cache.store('allAdditionalStructures', allAdditionalStructures);
         }
     }
 
@@ -366,15 +375,15 @@ mod.public.structures = function() {
 // Get structures that need topping up...
 mod.public.toppingUpStructures = function() {
     if(Game.toppingUpStructures === undefined) {
-        if(cacher.retrieve('toppingUpStructures')) {
-            Game.toppingUpStructures = cacher.retrieve('toppingUpStructures');
+        if(cache.retrieve('toppingUpStructures')) {
+            Game.toppingUpStructures = cache.retrieve('toppingUpStructures');
         } else {
             // Get all the decaying structures
             Game.toppingUpStructures = mod.public.decayingStructures();
             // Filter
             Game.toppingUpStructures = filter.byNeedsRepairingTopup(Game.toppingUpStructures);
 
-            cacher.store('toppingUpStructures', Game.toppingUpStructures);
+            cache.store('toppingUpStructures', Game.toppingUpStructures);
         }
     }
 

@@ -5,13 +5,11 @@ var config = require('config');
 // Log
 log('Loading: classes/spawn');
 
-// Should be moved somewhere else... not sure where... perhaps into manage.js itself...
-Spawn.prototype.cleanup = function() {
-    for(var i in Memory.creeps) {
-        if(!Game.namedCreeps[i]) {
-            delete Memory.creeps[i];
-        }
-    }
+// Basically part * count in an array
+Spawn.prototype.buildNumberOfParts = function(part, count) {
+    var parts = Array(count+1).join(part+','); // We're adding 1 here, it's because join basically connects the array middle bits, if we just have 1 item in an array, no middle bits!
+    parts = parts.substring(0, parts.length - 1).split(',');
+    return parts;
 }
 
 // This would basically tell me if the spawn can afford the body we pass...
@@ -22,31 +20,10 @@ Spawn.prototype.canAffordBody = function(body) {
 
     for(let part of body) {
         capacity = capacity - BODYPART_COST[part];
+        console.log(capacity);
     }
 
     return (capacity >= 0);
-}
-
-// Check if the spawn is regenerating it's energy...
-Spawn.prototype.isRegenerating = function() {
-    // We need to either define it, or update it if it's out of date by a tick
-    if(this.memory.regenerating === undefined || this.memory.regeneratingTimestamp !== Game.time) {
-        // If the energy is the same as the energy in previous (previous)
-        if(this.memory.energy === this.energy) {
-            this.memory.regenerating = false;
-        } else {
-            this.memory.regenerating = true;
-        }
-        
-        // Update the energy
-        this.memory.energy = this.energy;
-        // Update when it last checked it was regenerating...
-        this.memory.regeneratingTimestamp = Game.time;
-    }
-
-    // Should probably check for haulers and miners for the hub this spawn belongs to...
-
-    return this.memory.regenerating;
 }
 
 // Create the creeps in the queue... this will try to create it no matter what
@@ -81,28 +58,11 @@ Spawn.prototype.createCreepInQueue = function(forced = false) {
     }
 }
 
-// Add creep to queue...
-Spawn.prototype.queueCreation = function(body, memory, priority = 5) {
-    if(!this.memory.creationQueue) {
-        this.memory.creationQueue = [];
-    }
-
-    // Add the body, memory, and priority values to the spawn queue
-    this.memory.creationQueue.push({body,memory,priority});
-}
-
-// Add creep to queue... will check if it exists in queue already, if not then it will assemble body and push :)
-Spawn.prototype.smartQueueCreation = function(memory, priority = 5) {
-    if(!this.memory.creationQueue) {
-        this.memory.creationQueue = [];
-    }
-    
-    if(!this.isCreationQueued(memory) && !this.isCreating(memory)) {
-        const body = this.dynamicAssemble(memory.origin);
-
-        // Add the body, memory, and priority values to the spawn queue
-        this.memory.creationQueue.push({body,memory,priority});
-    }
+// Calculate expected strength of creep...
+Spawn.prototype.getExpectedGuardStrength = function() {
+    var body = this.dynamicAssemble('guard');
+    var strength = body.length * 100;
+    return strength;
 }
 
 Spawn.prototype.isCreationQueued = function(memory) {
@@ -149,12 +109,74 @@ Spawn.prototype.isCreating = function(memory) {
     }
 }
 
-// Calculate expected strength of creep...
-Spawn.prototype.getExpectedGuardStrength = function() {
-    var body = this.dynamicAssemble('guard');
-    var strength = body.length * 100;
-    return strength;
+// Check if the spawn is regenerating it's energy...
+Spawn.prototype.isRegenerating = function() {
+    // We need to either define it, or update it if it's out of date by a tick
+    if(this.memory.regenerating === undefined || this.memory.regeneratingTimestamp !== Game.time) {
+        // If the energy is the same as the energy in previous (previous)
+        if(this.memory.energy === this.energy) {
+            this.memory.regenerating = false;
+        } else {
+            this.memory.regenerating = true;
+        }
+        
+        // Update the energy
+        this.memory.energy = this.energy;
+        // Update when it last checked it was regenerating...
+        this.memory.regeneratingTimestamp = Game.time;
+    }
+
+    // Should probably check for haulers and miners for the hub this spawn belongs to...
+
+    return this.memory.regenerating;
 }
+
+// Add creep to queue...
+Spawn.prototype.queueCreation = function(body, memory, priority = 5) {
+    if(!this.memory.creationQueue) {
+        this.memory.creationQueue = [];
+    }
+
+    // Add the body, memory, and priority values to the spawn queue
+    this.memory.creationQueue.push({body,memory,priority});
+}
+
+Spawn.prototype.removeCreation = function(memory) {
+    if(!this.memory.creationQueue) {
+        this.memory.creationQueue = [];
+    }
+
+    this.memory.creationQueue = _.reject(this.memory.creationQueue, (creation) => (creation.memory.origin === memory.origin));
+
+    return this.memory.creationQueue;
+}
+
+// Add creep to queue... will check if it exists in queue already, if not then it will assemble body and push :)
+Spawn.prototype.smartQueueCreation = function(memory, priority = 5) {
+    if(!this.memory.creationQueue) {
+        this.memory.creationQueue = [];
+    }
+    
+    if(!this.isCreationQueued(memory) && !this.isCreating(memory)) {
+        const body = this.dynamicAssemble(memory.origin);
+
+        // Add the body, memory, and priority values to the spawn queue
+        this.memory.creationQueue.push({body,memory,priority});
+    }
+}
+
+Spawn.prototype.trimBody = function(body) {
+    if(this.canCreateCreep(body) !== ERR_NOT_ENOUGH_ENERGY) {
+        return body;
+    } else {
+        // Still can't afford, so get rid of the first in list of body parts... this is because we have prioritized how the body is built...
+        body.shift();
+        return this.trimBody(body);
+    }
+}
+
+
+
 
 // This will dynamically create the creep body depending on how much energy the room/spawn has...
 Spawn.prototype.dynamicAssemble = function(origin) {
@@ -291,28 +313,4 @@ Spawn.prototype.dynamicAssemble = function(origin) {
     parts.push(MOVE);
     
     return parts;
-}
-
-Spawn.prototype.buildNumberOfParts = function(part, count) {
-    var parts = Array(count+1).join(part+','); // We're adding 1 here, it's because join basically connects the array middle bits, if we just have 1 item in an array, no middle bits!
-    parts = parts.substring(0, parts.length - 1).split(',');
-    return parts;
-}
-
-Spawn.prototype.removeCreation = function(memory) {
-    if(!this.memory.creationQueue) {
-        this.memory.creationQueue = [];
-    }
-
-    this.memory.creationQueue = _.reject(this.memory.creationQueue, (creation) => (creation.memory.origin === memory.origin));
-}
-
-Spawn.prototype.trimBody = function(body) {
-    if(this.canCreateCreep(body) !== ERR_NOT_ENOUGH_ENERGY) {
-        return body;
-    } else {
-        // Still can't afford, so get rid of the first in list of body parts... this is because we have prioritized how the body is built...
-        body.shift();
-        return this.trimBody(body);
-    }
 }

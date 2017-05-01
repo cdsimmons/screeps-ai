@@ -1,12 +1,6 @@
 // Required modules
 var config = require('config');
 var log = require('helpers/log');
-// Splitting out parts to make things easier to find
-var assignmentsForExternal = require('manager/manage.assignmentsForExternal');
-var assignmentsForHub = require('manager/manage.assignmentsForHub');
-var destinations = require('manager/manage.destinations');
-var actions = require('manager/manage.actions');
-var spawns = require('manager/manage.spawns');
 
 // Log
 log('Loading: manager/manage');
@@ -16,10 +10,28 @@ var mod = {};
 mod.private = {};
 mod.public = {};
 
+// Importing all the kiddies
+mod.public.destinations = require('manager/manage.destinations');
+mod.public.actions = require('manager/manage.actions');
+mod.public.spawns = require('manager/manage.spawns');
+mod.public.assignments = {};
+
+// External assignments...
+mod.public.assignments.external = {};
+mod.public.assignments.external.eyeballFlags = require('./assignments.external/eyeballFlags.js');
+
+// Hub assignments...
+mod.public.assignments.hub = {};
+mod.public.assignments.hub.sourceFlags = require('./assignments.hub/sourceFlags.js');
+
+mod.public.assignmentsForExternal = require('manager/manage.assignmentsForExternal');
+mod.public.assignmentsForHub = require('manager/manage.assignmentsForHub');
+
 // Manage the world... basically everything not managed by hubs...
 mod.public.all = function() {
 	
 	// Clean out creeps that don't exist...
+	// We get a CPU spike sometimes, even if we just do a wait...
 	// if(!timeout.waiting('cleanupCreeps', 10)) {
         for(var i in Memory.creeps) {
             if(!Game.namedCreeps[i]) {
@@ -40,7 +52,12 @@ mod.public.all = function() {
 		if(Game.namedRooms[hubId]) {
 			let hub = new Hub(hubId);
 
-			mod.public.assignmentsForHub(hub);
+			log.cpu('Managing hub...');
+			mod.public.assignments.hub.sourceFlags(hub);
+			log.cpu('sourceFlags');
+			mod.public.assignments.hub.sourceFlags(hub);
+			log.cpu('sourceFlags');
+
 			mod.public.spawns(hub); // Should probably move away from the hub restriction and put it after actions...
 		}
 	}
@@ -52,14 +69,12 @@ mod.public.all = function() {
 	// External should be anything that can be outside of a hub... can guards be outside of a hub? No because this is hub defence...
 }
 
-// Importing all the kiddies
-mod.public.assignmentsForExternal = assignmentsForExternal;
-mod.public.assignmentsForHub = assignmentsForHub;
-mod.public.destinations = destinations;
-mod.public.actions = actions;
-mod.public.spawns = spawns;
-
 // When I look at combat, I should probably avoid being complicated and just create a squad against whatever hub is nearby...
 // Thief is going to be part of combat, since the flags in there aren't really part of hub...
 
 module.exports = mod.public;
+
+
+// manage.assignments.external.eyeballFlags()
+// manage.assignments.hub.sourceFlags(hub)
+// 

@@ -1,34 +1,43 @@
-// Initialise environment...
-require('mock/gameStateStart')();
+// Need globals constants and stuff (log relies on this)
+require('mock/gameStateGlobals.js')();
 
 // Object itself
 var populator = require('helpers/populator');
 
 // Tests
 describe('helpers/populator', function() {
+	before(function (){
+		require('mock/gameStateStart')();
+	});
+
 	it('exists', function(){
 		expect(populator).to.exist;
 	});
 
-	it('reassigns', function(){
-		populator.reassign();
+	it('should rereference', function(){
+		populator.private.rereference();
+
 		expect(Game.namedRooms).to.exist;
-		expect(Game.namedFlags).to.exist;
 		expect(Game.namedCreeps).to.exist;
+		expect(Game.namedFlags).to.exist;
 	});
 
-	// TODO - Have to polyfill room.find somehow...
-	// We have room data, but they aren't set to room protos atm
-	it('populates', function(){
-		console.log('raaa', require('lodash'));
-		//populator.populate();
-		// expect(Game.rooms).to.exist;
-		// expect(Game.creeps).to.exist;
-		// expect(Game.flags).to.exist;
-		// expect(Game.structures).to.exist;
-		// expect(Game.controllers).to.exist;
-		// expect(Game.spawns).to.exist;
-		// expect(Game.banks).to.exist;
-		// expect(Game.towers).to.exist;
+	it('should populate config', function(){
+		populator.private.config();
+
+		var config = require('config');
+		var targets = config.hubs;
+		var target = targets['sim'];
+
+		expect(target).to.have.property('rooms');
+		expect(target).to.have.property('creeps');
+	});
+
+	it('should populate Game', function(){
+		populator.private.game();
+
+		expect(Game.spills).to.exist;
+		expect(Game.hostiles).to.exist;
+		expect(Game.controllers).to.exist;
 	});
 });
