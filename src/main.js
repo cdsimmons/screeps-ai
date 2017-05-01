@@ -22,12 +22,21 @@ log('State: main - Initialized');
 
 // The looop
 var loop = function () {
+    // Cpu before
+    log.cpu('///////////// start', 'start');
+
+    // Clean up creep memory...
+    for(var i in Memory.creeps) {
+        if(!Game.creeps[i]) {
+            delete Memory.creeps[i];
+        }
+    }
+    // First call to Memory makes the CPU spike... perhaps it is to do with the size of the Memory?
+    log.cpu('Cleaned up memory');
+
     // Prepare global variables every loop...
     populator.init = false;
     populator.all();
-
-    // Cpu before
-    log.cpu('///////////// start', 'start');
 
     // Manage everything...
     manage.all();
@@ -37,15 +46,15 @@ var loop = function () {
     //     log('Low cpu... '+Game.cpu.bucket);
     // }
 
-    // Reset the log state at end of every loop
-    log.reset();
-
     // Monitor CPU
     // Just realising, this would be massive... 21k entries in the memory in the end... not worth it...
     //monitor();
     
     // CPU after all that...
     log.cpu('///////////// end', 'end');
+
+    // Reset the log state at end of every loop
+    log.reset();
 }
 
 module.exports.loop = loop;

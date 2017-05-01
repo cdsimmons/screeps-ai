@@ -120,7 +120,7 @@ mod.public = function() {
 				}
 
 				// Handle destination for mobileGuardFlags assignment... has to move around
-				if((assignment.name === 'spotGuardFlags' || assignment.name === 'roomGuardFlags' || assignment.name === 'hubGuardFlags') && assignee.memory.hub) {
+				if((assignment.name === 'guardSpotFlags' || assignment.name === 'guardRoomFlags' || assignment.name === 'guardHubFlags') && assignee.memory.hub) {
 					let hub = new Hub(assignee.memory.hub);
 					let hostiles = hub.hostiles;
 					hostiles = sort.byNearest(hostiles, assignee.pos);
@@ -128,17 +128,17 @@ mod.public = function() {
 					// If we have hostiles...
 					if(hostiles.length > 0) {
 						// Just look for any hostiles within 1 range...
-						if(assignment.name === 'spotGuardFlags') {
+						if(assignment.name === 'guardSpotFlags') {
 							hostiles = filter.byRange(hostiles, 1);
 						}
 
 						// Look for any hostiles within the same room...
-						if(assignment.name === 'roomGuardFlags') {
+						if(assignment.name === 'guardRoomFlags') {
 							hostiles = filter.bySameRoom(hostiles, assignee.pos.roomName);
 						}
 
 						// Look for any hostiles within the same room...
-						if(assignment.name === 'hubGuardFlags') {
+						if(assignment.name === 'guardHubFlags') {
 							// No filtering I guess...
 						}
 

@@ -9,8 +9,6 @@ log('Loading: classes/hub');
 // Initially Hub was just the rooms and config for a hub... now each hub has all of it's creeps, flags, and structures on load...
 // We're setting the hubs to Game instead of global, since Game is reset every tick, whereas global is not... global is better for functions and values that don't change
 global.Hub = function(id) {
-    log.cpu('Hub', 'start');
-
     // Initiate global hubs if undefined...
     if(!Game.hubs) {
         Game.hubs = {};
@@ -23,7 +21,6 @@ global.Hub = function(id) {
 
     // If we have hub already then just return it...
     if(Game.hubs[id]) {
-        log.cpu('Hub', 'end');
         return Game.hubs[id];
     } else {
         // Init memory if necessary
@@ -45,20 +42,22 @@ global.Hub = function(id) {
         this.config = config.hubs[this.id];
         this.rooms = this.config.rooms;
 
+        log.cpu('gameToHub properties', 'start');
         // Copying world properties and limiting to hub...
         for(let property in Game) {
-            try {
-                this[property] = filter.byHub(Game[property], this);
-            } catch(e) {
-                // We are trying to filter the Game object items by roomName, but if that fails (such as it has no roomName), oh well
+            if(Array.isArray(Game[property])) {
+                try {
+                    this[property] = filter.byHub(Game[property], this);
+                } catch(e) {
+                    // We are trying to filter the Game object items by roomName, but if that fails (such as it has no roomName), oh well
+                }
             }
         }
+        log.cpu('gameToHub properties', 'end');
 
         // Storing in memory for later...
         Game.hubs[id] = this;
     }
-    
-    log.cpu('Hub', 'end');
 }
 
 // Extend hub proto for equalizer

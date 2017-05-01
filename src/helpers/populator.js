@@ -61,20 +61,24 @@ mod.private.game = function() {
 
     // Rooms
     Game.rooms = find.rooms();
+    log.cpu('rooms');
 
     // Creeps
     Game.creeps = find.creeps();
+    log.cpu('creeps');
     // Filtering
     Game.damagedCreeps = filter.byHitsPercentage(Game.creeps, 0, 99);
+    log.cpu('damagedCreeps');
     Game.minerCreeps = filter.byMemory(Game.creeps, 'origin', 'miner');
     Game.haulerCreeps = filter.byMemory(Game.creeps, 'origin', 'hauler');
     Game.commonerCreeps = filter.byMemory(Game.creeps, 'origin', 'commoner');
     Game.guardCreeps = filter.byMemory(Game.creeps, 'origin', 'guard');
     Game.claimerCreeps = filter.byMemory(Game.creeps, 'origin', 'claimer');
     Game.pesterCreeps = filter.byMemory(Game.creeps, 'origin', 'pester');
+    log.cpu('originCreeps'); // This is giving me like 2 or 3 CPU... wtf...
     // Filtering more...
     Game.attackingGuardCreeps = filter.byHasAssignment(Game.guardCreeps, 'attack');
-    log.cpu('creeps');
+    log.cpu('filteredCreeps');
 
     // Flags... need to limit to hub
     Game.flags = find.flags();
@@ -86,9 +90,9 @@ mod.private.game = function() {
     Game.claimFlags = filter.byColors(Game.flags, flagColors.claim.primary, flagColors.claim.secondary);
     Game.pesterFlags = filter.byColors(Game.flags, flagColors.pester.primary, flagColors.pester.secondary);
     Game.eyeballFlags = filter.byColors(Game.flags, flagColors.eyeball.primary, flagColors.eyeball.secondary);
-    Game.spotGuardFlags = filter.byColors(Game.flags, flagColors.spotGuard.primary, flagColors.spotGuard.secondary);
-    Game.roomGuardFlags = filter.byColors(Game.flags, flagColors.roomGuard.primary, flagColors.roomGuard.secondary);
-    Game.hubGuardFlags = filter.byColors(Game.flags, flagColors.hubGuard.primary, flagColors.hubGuard.secondary);
+    Game.guardSpotFlags = filter.byColors(Game.flags, flagColors.guardSpot.primary, flagColors.guardSpot.secondary);
+    Game.guardRoomFlags = filter.byColors(Game.flags, flagColors.guardRoom.primary, flagColors.guardRoom.secondary);
+    Game.guardHubFlags = filter.byColors(Game.flags, flagColors.guardHub.primary, flagColors.guardHub.secondary);
     log.cpu('flags');
 
     // Constructions... need to limit to hub
@@ -121,26 +125,30 @@ mod.private.game = function() {
 }
 
 mod.public.all = function() {
-    log.cpu('Game', 'start');
+    log.cpu('Populator', 'start');
     if(!mod.public.init) {
         log.cpu('init');
         
+        log.cpu('Config', 'start');
         mod.private.config();
-        log.cpu('config');
+        log.cpu('Config', 'end');
         
+        log.cpu('Rereference', 'start');
         mod.private.rereference();
-        log.cpu('rereference');
+        log.cpu('Rereference', 'end');
 
+        log.cpu('Game', 'start');
         mod.private.game();
-        log.cpu('game');
+        log.cpu('Game', 'end');
 
+        log.cpu('Hubs', 'start');
         mod.private.hubs();
-        log.cpu('hubs');
+        log.cpu('Hubs', 'end');
         
         // Update flag so we only init once...
         mod.public.init = true;
     }
-    log.cpu('Game', 'end');
+    log.cpu('Populator', 'end');
 }
 
 // Expose privates for testing...

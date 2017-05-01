@@ -97,15 +97,15 @@ mod.public = {
                 primary: COLOR_RED, // Eyes of red
                 secondary: COLOR_WHITE
             },
-            spotGuard: {
+            guardSpot: {
                 primary: COLOR_BROWN, // Boring brown
                 secondary: COLOR_BROWN
             },
-            roomGuard: {
+            guardRoom: {
                 primary: COLOR_BROWN, // Energetic brown
                 secondary: COLOR_ORANGE
             },
-            hubGuard: {
+            guardHub: {
                 primary: COLOR_BROWN, // Super energetic brown
                 secondary: COLOR_YELLOW
             }
