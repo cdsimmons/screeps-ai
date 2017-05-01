@@ -107,16 +107,13 @@ gulp.task('compile', ['test'], function(done) {
 gulp.task('distribute', ['compile'], function(done) {
 	// Not ending gulp task...
 	git.branch(function (str) {
+		console.log(paths.game + '/' + str);
+
 		gulp.src(paths.dist)
 			.pipe(plumber())
 	    	.pipe(gulp.dest(paths.game + '/' + str));
 
         done();
-
-        // If tests pass we need to manually exit because of karma server...
-        if(!watching) {
-    		process.exit();
-    	}
 	});
 });
 
