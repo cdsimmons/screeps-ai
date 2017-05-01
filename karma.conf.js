@@ -2,7 +2,7 @@
 // Tried to add in coverage, but since I'm not using babel it didn't seem worth adding 4 other node packages just to see this metric
 
 var webpack = require('webpack');
-var webpackConfig = require('./webpack.config');
+var webpackConfig = require('./webpack.config')('test');
 var testGlob = 'test/**/*.test.js';
 var srcGlob = 'src/main.js';
 
