@@ -6,7 +6,7 @@ var log = require('helpers/log');
 
 // Tests
 describe('helpers/log', function() {
-	before(function (){
+	beforeEach(function (){
 		require('mock/gameStateStart')();
 	});
 

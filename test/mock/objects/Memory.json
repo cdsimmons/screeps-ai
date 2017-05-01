@@ -199,19 +199,7 @@
             {
                "body":[
                   "tough",
-                  "tough",
-                  "tough",
-                  "tough",
-                  "tough",
                   "move",
-                  "move",
-                  "move",
-                  "move",
-                  "move",
-                  "attack",
-                  "attack",
-                  "attack",
-                  "attack",
                   "attack",
                   "heal",
                   "move"
@@ -223,9 +211,7 @@
                "priority":5
             }
          ],
-         "regenerating":true,
-         "energy":300,
-         "regeneratingTimestamp":450
+         "energy":300
       }
    },
    "rooms":{

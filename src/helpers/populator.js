@@ -16,20 +16,6 @@ var mod = {};
 mod.private = {};
 mod.public = {};
 
-mod.private.init = false;
-
-mod.private.config = function() {
-    // Giving all the hubs their default config values...
-    for(var key in config.hubs) {
-        if(key !== 'defaults') {
-            _.defaults(config.hubs[key], config.hubs.defaults);
-        }
-    }
-
-    // Now remove the defaults, as we no longer need them...
-    delete config.hubs.defaults;
-}
-
 mod.private.rereference = function() {
     // I prefer to work with Arrays for my collections, so that I can sort, get first that's nearest, check length quicker, etc...
     // However we need to keep the original hashed objects in case we want to access by name (for example... Game.room[name], to check if it exists)
@@ -126,12 +112,8 @@ mod.private.game = function() {
 
 mod.public.all = function() {
     log.cpu('Populator', 'start');
-    if(!mod.public.init) {
+    //if(!Game.namedRooms) {
         log.cpu('init');
-        
-        log.cpu('Config', 'start');
-        mod.private.config();
-        log.cpu('Config', 'end');
         
         log.cpu('Rereference', 'start');
         mod.private.rereference();
@@ -144,10 +126,7 @@ mod.public.all = function() {
         log.cpu('Hubs', 'start');
         mod.private.hubs();
         log.cpu('Hubs', 'end');
-        
-        // Update flag so we only init once...
-        mod.public.init = true;
-    }
+    //}
     log.cpu('Populator', 'end');
 }
 

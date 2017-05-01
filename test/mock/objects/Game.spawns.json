@@ -32,11 +32,6 @@
       "name":"Spawn1",
       "energy":2,
       "energyCapacity":300,
-      "spawning":{
-         "name":"Alexis",
-         "needTime":9,
-         "remainingTime":7
-      },
       "owner":{
          "username":"PlayerName"
 

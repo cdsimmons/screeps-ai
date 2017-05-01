@@ -10,6 +10,11 @@ describe('helpers/filter', function() {
 		require('mock/gameStateStart')();
 	});
 
+	beforeEach(function (){
+		require('mock/gameStateStart')();
+		Game.time = 10;
+	});
+
 	it('exists', function(){
 		expect(filter).to.exist;
 	});

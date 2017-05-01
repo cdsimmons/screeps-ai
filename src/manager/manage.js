@@ -10,10 +10,7 @@ var mod = {};
 mod.private = {};
 mod.public = {};
 
-// Importing all the kiddies
-mod.public.destinations = require('manager/manage.destinations');
-mod.public.actions = require('manager/manage.actions');
-mod.public.spawns = require('manager/manage.spawns');
+// Assignments...
 mod.public.assignments = {};
 
 // External assignments...
@@ -38,6 +35,12 @@ mod.public.assignments.hub.constructionSites = require('./assignments.hub/constr
 mod.public.assignments.hub.controllers = require('./assignments.hub/controllers.js');
 mod.public.assignments.hub.reserveFlags = require('./assignments.hub/reserveFlags.js');
 mod.public.assignments.hub.claimFlags = require('./assignments.hub/claimFlags.js');
+
+// Other components...
+mod.public.destinations = require('manager/manage.destinations');
+mod.public.actions = require('manager/manage.actions');
+mod.public.spawns = require('manager/manage.spawns');
+
 
 // Manage the world... basically everything not managed by hubs...
 mod.public.all = function() {

@@ -6,7 +6,7 @@ var sort = require('helpers/sort');
 
 // Tests
 describe('helpers/sort', function() {
-	before(function (){
+	beforeEach(function (){
 		require('mock/gameStateStart')();
 	});
 

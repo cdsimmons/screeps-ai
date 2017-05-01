@@ -1,6 +1,8 @@
 // Required modules
-var log = require('helpers/log');
 var config = require('config');
+var log = require('helpers/log');
+var find = require('helpers/find');
+var populator = require('helpers/populator');
 
 // Log
 log('Loading: classes/spawn');
@@ -20,7 +22,6 @@ Spawn.prototype.canAffordBody = function(body) {
 
     for(let part of body) {
         capacity = capacity - BODYPART_COST[part];
-        console.log(capacity);
     }
 
     return (capacity >= 0);
@@ -139,6 +140,8 @@ Spawn.prototype.queueCreation = function(body, memory, priority = 5) {
 
     // Add the body, memory, and priority values to the spawn queue
     this.memory.creationQueue.push({body,memory,priority});
+
+    return true;
 }
 
 Spawn.prototype.removeCreation = function(memory) {
@@ -148,20 +151,20 @@ Spawn.prototype.removeCreation = function(memory) {
 
     this.memory.creationQueue = _.reject(this.memory.creationQueue, (creation) => (creation.memory.origin === memory.origin));
 
-    return this.memory.creationQueue;
+    return true;
 }
 
 // Add creep to queue... will check if it exists in queue already, if not then it will assemble body and push :)
 Spawn.prototype.smartQueueCreation = function(memory, priority = 5) {
-    if(!this.memory.creationQueue) {
-        this.memory.creationQueue = [];
-    }
-    
     if(!this.isCreationQueued(memory) && !this.isCreating(memory)) {
         const body = this.dynamicAssemble(memory.origin);
 
-        // Add the body, memory, and priority values to the spawn queue
-        this.memory.creationQueue.push({body,memory,priority});
+        // Add creation to queue...
+        this.queueCreation(body, memory, priority);
+
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -175,6 +178,20 @@ Spawn.prototype.trimBody = function(body) {
     }
 }
 
+// Check if it will recover energy in time... no desperate measures yet!
+Spawn.prototype.willRecoverEnergy = function() {
+    if(this.isRegenerating()) {
+        // If regenerating, then we know it will recover more...
+        return true;
+    } else {
+        // Otherwise, figure out how many haulers and miners/high banks there are
+        var hubId = find.hubId(this);
+        var hub = Game.hubs[hubId];
+
+        return (hub.haulerCreeps.length > 0 && (hub.minerCreeps.length > 0 || hub.highEnergyBanks.length > 0))
+    }
+}
+
 
 
 
@@ -182,15 +199,19 @@ Spawn.prototype.trimBody = function(body) {
 Spawn.prototype.dynamicAssemble = function(origin) {
     var capacity = this.room.energyCapacityAvailable;
     var parts = [];
-    var conf = config.hubs[this.pos.roomName];
+    var hubConfig = config.hubs[this.pos.roomName];
     // Used later...
     var costs;
     var numberOfParts = 0;
 
+    // Had an issue where the config updates populator made were not carried through to here...
+    // I've since moved the config updates into the config module itself, which makes more sense anyway
+    // However I still don't know why the updates were not available here when they were inside the test script itself...
+
     // We don't want godlike creeps for small hubs, so we're putting in a hub limiter... not applicable to guards, we want those hench :P
     // Really what I should probably do is have hench dudes and less creeps... hmm...
-    if(capacity > conf.spawn.energyLimit && origin !== 'guard') {
-        capacity = conf.spawn.energyLimit;
+    if(capacity > hubConfig.spawn.energyLimit && origin !== 'guard') {
+        capacity = hubConfig.spawn.energyLimit;
     }
     
     // Every body needs 1 MOVE

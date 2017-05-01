@@ -35,7 +35,6 @@ var loop = function () {
     log.cpu('Cleaned up memory');
 
     // Prepare global variables every loop...
-    populator.init = false;
     populator.all();
 
     // Manage everything...

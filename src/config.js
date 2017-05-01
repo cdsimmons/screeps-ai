@@ -3,33 +3,36 @@ var mod = {};
 mod.private = {};
 mod.public = {};
 
-mod.public = {
+mod.private.defaults = {
     hubs: {
-        defaults: {
-            rooms: [],
-            creeps: {
-                commoner: {
-                    count: 2
-                },
-                hauler: {
-                    count: 2
-                }
+        rooms: [],
+        creeps: {
+            commoner: {
+                count: 2
             },
-            assignments: {
-                damagedStructures: {
-                    limit: 1
-                }
-            },
-            structures: {
-            },
-            spawn: {
-                queueCapacity: 20,
-                energyLimit: 2000
-            },
-            banks: {
-                surplus: 50 // Hm... kind of useful, but might not be? energy should always be used I think
+            hauler: {
+                count: 2
             }
         },
+        assignments: {
+            damagedStructures: {
+                limit: 1
+            }
+        },
+        structures: {
+        },
+        spawn: {
+            queueCapacity: 20,
+            energyLimit: 2000
+        },
+        banks: {
+            surplus: 50 // Hm... kind of useful, but might not be? energy should always be used I think
+        }
+    }
+}
+
+mod.public = {
+    hubs: {
         sim: {
             rooms: ['sim']
         },
@@ -131,5 +134,10 @@ mod.public = {
         }
     }
 };
+
+// Giving all the hubs their default config values...
+for(var key in mod.public.hubs) {
+    _.defaults(mod.public.hubs[key], mod.private.defaults.hubs);
+}
 
 module.exports = mod.public;

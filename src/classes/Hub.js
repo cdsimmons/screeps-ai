@@ -45,6 +45,7 @@ global.Hub = function(id) {
         log.cpu('gameToHub properties', 'start');
         // Copying world properties and limiting to hub...
         for(let property in Game) {
+            // We only want the arrays...
             if(Array.isArray(Game[property])) {
                 try {
                     this[property] = filter.byHub(Game[property], this);

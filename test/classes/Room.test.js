@@ -3,7 +3,7 @@ require('mock/gameStateGlobals.js')();
 
 // tests.js
 describe('Room', function() {
-	before(function (){
+	beforeEach(function (){
 		// Reset game state before every test...
 		require('mock/gameStateStart')();
 	});

@@ -6,7 +6,7 @@ var timeout = require('helpers/timeout');
 
 // Tests
 describe('helpers/timeout', function() {
-	before(function (){
+	beforeEach(function (){
 		require('mock/gameStateStart')();
 	});
 

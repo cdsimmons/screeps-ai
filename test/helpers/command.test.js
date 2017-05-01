@@ -6,7 +6,7 @@ var command = require('helpers/command');
 
 // Tests
 describe('helpers/command', function() {
-	before(function (){
+	beforeEach(function (){
 		require('mock/gameStateStart')();
 	});
 

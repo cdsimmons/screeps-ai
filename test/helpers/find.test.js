@@ -6,7 +6,7 @@ var find = require('helpers/find');
 
 // Tests
 describe('helpers/find', function() {
-	before(function (){
+	beforeEach(function (){
 		require('mock/gameStateStart')();
 	});
 

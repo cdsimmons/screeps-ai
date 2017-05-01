@@ -6,7 +6,7 @@ var populator = require('helpers/populator');
 
 // Tests
 describe('helpers/populator', function() {
-	before(function (){
+	beforeEach(function (){
 		require('mock/gameStateStart')();
 	});
 
@@ -22,22 +22,20 @@ describe('helpers/populator', function() {
 		expect(Game.namedFlags).to.exist;
 	});
 
-	it('should populate config', function(){
-		populator.private.config();
-
-		var config = require('config');
-		var targets = config.hubs;
-		var target = targets['sim'];
-
-		expect(target).to.have.property('rooms');
-		expect(target).to.have.property('creeps');
-	});
-
 	it('should populate Game', function(){
 		populator.private.game();
 
 		expect(Game.spills).to.exist;
 		expect(Game.hostiles).to.exist;
 		expect(Game.controllers).to.exist;
+	});
+
+	it('should populate Game.hubs', function(){
+		populator.private.hubs();
+
+		expect(Game.hubs).to.exist;
+		expect(Game.hubs['sim']).to.exist;
+		expect(Game.hubs['bla']).to.not.exist;
+		expect(Game.hubs['E53N45']).to.not.exist;
 	});
 });

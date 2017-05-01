@@ -2,7 +2,7 @@
 require('mock/gameStateGlobals.js')();
 
 describe('Creep', function() {
-	before(function (){
+	beforeEach(function (){
 		// Reset game state before every test...
 		require('mock/gameStateStart')();
 	});

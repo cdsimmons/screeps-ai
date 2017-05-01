@@ -6,7 +6,7 @@ var cache = require('helpers/cache');
 
 // Tests
 describe('helpers/cache', function() {
-	before(function (){
+	beforeEach(function (){
 		require('mock/gameStateStart')();
 	});
 	

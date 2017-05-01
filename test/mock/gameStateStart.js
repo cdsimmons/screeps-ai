@@ -1,20 +1,19 @@
 'use strict';
 
 module.exports = function(reset) {
-    console.log('Reset Game State');
-    
     require('./gameStateGlobals.js')(reset === undefined ? true : reset);
 
     // Object population... exported from simulation
-    Game.creeps = require('./objects/Game.creeps');
-    Game.rooms = require('./objects/Game.rooms');
-    Game.spawns = require('./objects/Game.spawns');
-    Game.flags = require('./objects/Game.flags');
-    Game.structures = require('./objects/Game.structures');
-    Game.constructionSites = require('./objects/Game.constructionSites');
+    // Stringify and parse, to make sure modifications are cleared before each test
+    Game.creeps = JSON.parse(JSON.stringify(require('./objects/Game.creeps')));
+    Game.rooms = JSON.parse(JSON.stringify(require('./objects/Game.rooms')));
+    Game.spawns = JSON.parse(JSON.stringify(require('./objects/Game.spawns')));
+    Game.flags = JSON.parse(JSON.stringify(require('./objects/Game.flags')));
+    Game.structures = JSON.parse(JSON.stringify(require('./objects/Game.structures')));
+    Game.constructionSites = JSON.parse(JSON.stringify(require('./objects/Game.constructionSites')));
     Game.time = 1;
 
-    Memory = require('./objects/Memory');
+    Memory = JSON.parse(JSON.stringify(require('./objects/Memory')));
 
     // We import the objects, but not the functions etc, so we have to assigned that here...
     for(var key in Game.creeps) {
