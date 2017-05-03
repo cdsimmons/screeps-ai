@@ -11,7 +11,7 @@ mod.public = {};
 
 mod.public = function(hub) {
 
-	if(hub.hostiles.length > 0) {
+	if(hub.hostiles && hub.hostiles.length > 0) {
 		// First check that we have towers... each tower is worth about 2k hp... if assignment HP is more than towers in same room, then look at guards and spawning those 
 		// TODO - Calc myStrength better...
 		let myStrength = 0;//_.reduce(hub.guardCreeps, (memo, creep) => (memo + creep.hits), 0); // Get total strength of my guard...
@@ -91,13 +91,19 @@ mod.public = function(hub) {
 		if(true) {
 			let assignees = hub.attackingGuardCreeps;
 
-			// Calc strength for guards...
-			for(let assignee of assignees) {
-				myStrength = myStrength + assignee.hits;
+			log(assignees);
+
+			if(assignees !== undefined && assignees.length > 0) {
+				// Calc strength for guards...
+				for(let assignee of assignees) {
+					myStrength = myStrength + assignee.hits;
+				}
 			}
 		}
 
-		// Check that our strength is greater than hostile strength in the hub...
+		log('raaa', hub.creeps, hub.guardCreeps, hub.creeps); // undefined... wtf??
+
+		// // Check that our strength is greater than hostile strength in the hub...
 		if(true) {
 			const spawn = hub.spawns[0]; // Just get the first spawner... later we can figure out if spawner is busy or not...
 					
@@ -122,9 +128,9 @@ mod.public = function(hub) {
 			    		}
 			    		// If more hostiles than guards, make guards a priority!
 			    		let priority = 7;
-			    		if(hub.hostiles.length > hub.attackingGuardCreeps) {
-			    			priority = 3
-			    		}
+			    		// if(attackingGuardCreeps !== undefined && hub.hostiles.length > hub.attackingGuardCreeps.length) {
+			    		// 	priority = 3
+			    		// }
 
 			    		// Spawn it...
 			    		spawn.smartQueueCreation(memory, priority);
@@ -137,7 +143,10 @@ mod.public = function(hub) {
 			}
 		}
 	} else {
+		const spawn = hub.spawns[0];
 		hub.memory.alertLevel = 0;
+		// Remove guard from spawn queue...
+	    spawn.removeCreation({'origin': 'guard'});
 	}
 }
 

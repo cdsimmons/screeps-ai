@@ -12,7 +12,14 @@ mod.public = {};
 
 // If current tick is greater or equal to when the cache was going to expire...
 mod.private.expired = function(key) {
-	return (Game.time >= Memory.cache[key].expiresAt);
+    var extension = 0;
+
+    // If we are in a lowCpu game state, then give our caches an extension...
+    if(Game.state.lowCpu) {
+        extension = 30;
+    }
+    
+    return (Game.time >= (Memory.cache[key].expiresAt + extension));
 }
 
 // Idea being that we want to spread out when we recalc a cache value...
@@ -90,6 +97,31 @@ mod.public.retrieve = function(key) {
 	}
 
 	return null;
+}
+
+// Remove an object from an array of objects...
+mod.public.removeObjectFromArray = function(key, value) {
+    if(Memory.cache[key]) {
+        Memory.cache[key].value = _.without(Memory.cache[key].value, _.findWhere(Memory.cache[key].value, value));
+
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+// Remove expired stores...
+mod.public.cleanup = function() {
+    if(Memory.cache) {
+        // Loop through the cache objects, and remove if need be...
+        for(let key in Memory.cache) {
+            // If expired, then delete...
+            if(mod.private.expired(key)) {
+                delete Memory.cache[key];
+            }
+        }
+    }
 }
 
 // Return for testing...

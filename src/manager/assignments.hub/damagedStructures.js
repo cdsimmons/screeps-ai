@@ -10,7 +10,7 @@ mod.private = {};
 mod.public = {};
 
 mod.public = function(hub) {
-	if(hub.damagedStructures.length > 0) {
+	if(hub.damagedStructures && hub.damagedStructures.length > 0) {
 		// Get unassigned node flags
 		let assignments = hub.damagedStructures;
 		// Only get unassigned structures

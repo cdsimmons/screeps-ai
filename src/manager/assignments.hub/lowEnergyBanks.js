@@ -11,7 +11,7 @@ mod.public = {};
 
 mod.public = function(hub) {
 
-	if(hub.lowEnergyBanks.length > 0) {
+	if(hub.lowEnergyBanks && hub.lowEnergyBanks.length > 0) {
 		// Get unassigned node flags
 		let assignments = hub.lowEnergyBanks;
 		// Get nearest to main spawn...

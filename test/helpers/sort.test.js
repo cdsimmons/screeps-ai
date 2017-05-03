@@ -60,4 +60,15 @@ describe('helpers/sort', function() {
 		// Make sure that the 1st item is lower than the 2nd
 		expect(sortedTargets[1].level).to.be.at.least(sortedTargets[0].level);
 	});
+
+	it('should sort targets by structure type with byStructureType()', function(){
+		var targets = Game.lowEnergyStructures;
+		var sortedTargets = sort.byStructureType(targets, STRUCTURE_TOWER);
+
+		expect(targets.length).to.equal(sortedTargets.length);
+		expect(targets).to.not.equal(sortedTargets);
+
+		// Make sure that the 1st item is lower than the 2nd
+		expect(sortedTargets[0].structureType).to.equal(STRUCTURE_TOWER);
+	});
 });

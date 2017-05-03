@@ -4,8 +4,9 @@ var gulp = require('gulp');
 var plumber = require('gulp-plumber');
 var inject = require('gulp-inject-string');
 var eslint = require('gulp-eslint');
-var webpackStream = require('webpack-stream');
 var webpack2 = require('webpack');
+var webpackStream = require('webpack-stream');
+var webpackConfig = require('./webpack.config')('production');
 var git = require('git-rev');
 var KarmaServer = require('karma').Server;
 
@@ -13,7 +14,6 @@ var watching = false;
 var root = 'src';
 var output = 'dist';
 var test = 'test';
-var webpackConfig = require('./webpack.config');
 
 // Map all paths
 var paths = {
@@ -43,15 +43,6 @@ gulp.task('lint', function(done) {
 
 // Single run of the tests...
 gulp.task('test', ['lint'], function(done) {
-	// Overwrite environment var for webpack...
-	webpackConfig.plugins = [
-	    new webpack2.DefinePlugin({
-	        'process.env': {
-	            NODE_ENV: JSON.stringify('test')
-	        }
-	    })
-	]
-
 	// This is keeping node running...
 	new KarmaServer({
         configFile: __dirname + '/karma.conf.js',
@@ -81,19 +72,6 @@ gulp.task('test', ['lint'], function(done) {
 
 // Bundle up with webpack
 gulp.task('compile', ['test'], function(done) {
-	// Overwrite environment var for webpack...
-	// I can improve this... just like how gameStateStart is called as a function...
-	// I keep forgetting that require is basically like injecting the JS straight in... 
-	// I require the object atm, but I can make it a function which returns an object and call that...
-	// If I do that, I can just pass an env variable! :D
-	webpackConfig.plugins = [
-	    new webpack2.DefinePlugin({
-	        'process.env': {
-	            NODE_ENV: JSON.stringify('production')
-	        }
-	    })
-	]
-
 	return gulp.src(paths.entry)
 		.pipe(plumber())
 		.pipe(webpackStream(webpackConfig, webpack2))

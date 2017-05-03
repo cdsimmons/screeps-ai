@@ -132,6 +132,9 @@ mod.public = {
             cpu: '#5d80b2',
             warning: 'red'
         }
+    },
+    cpu: {
+        surplus: 4000 // How much CPU to keep in bucket before we try to really slim down our actions... can then use this up in times of war
     }
 };
 

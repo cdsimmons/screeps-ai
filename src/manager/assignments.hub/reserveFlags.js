@@ -10,7 +10,7 @@ mod.private = {};
 mod.public = {};
 
 mod.public = function(hub) {
-	if(hub.reserveFlags.length > 0) {
+	if(hub.reserveFlags && hub.reserveFlags.length > 0) {
 		// Get unassigned node flags
 		let assignments = hub.reserveFlags;
 		assignments = filter.byNotHasAssignee(assignments);

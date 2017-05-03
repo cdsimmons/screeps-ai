@@ -174,7 +174,7 @@
                   "roomName":"sim"
                }
             },
-            "method":"build"
+            "method":"controller"
          },
          "destination":{
             "name":"constructionSites",

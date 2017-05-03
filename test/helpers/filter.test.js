@@ -134,6 +134,9 @@ describe('helpers/filter', function() {
 	    expect(targets.length).to.equal(5);
 
 	    expect(targets.length).to.be.at.least(filteredTargets.length);
+
+	    filteredTargets = filter.byHasAssignment(targets, 'build');
+	    expect(filteredTargets.length).to.equal(1);
 	});
 
 	it('should filter objects by having a controller in the roomName using byHasController()', function(){

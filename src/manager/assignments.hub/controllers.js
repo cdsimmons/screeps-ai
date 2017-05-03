@@ -10,7 +10,7 @@ mod.private = {};
 mod.public = {};
 
 mod.public = function(hub) {
-	if(hub.controllers.length > 0) {
+	if(hub.controllers && hub.controllers.length > 0) {
 		// Get unassigned node flags
 		let assignments = hub.controllers;
 		// Order by level...

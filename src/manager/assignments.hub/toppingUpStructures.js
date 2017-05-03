@@ -3,6 +3,7 @@ var config = require('config');
 var log = require('helpers/log');
 var sort = require('helpers/sort');
 var filter = require('helpers/filter');
+var cache = require('helpers/cache');
 
 // Init the module
 var mod = {};
@@ -11,7 +12,7 @@ mod.public = {};
 
 mod.public = function(hub) {
 
-	if(hub.toppingUpStructures.length > 0) {
+	if(hub.toppingUpStructures && hub.toppingUpStructures.length > 0) {
 		// Get unassigned node flags
 		let assignments = hub.toppingUpStructures;
 		assignments = filter.byNotHasAssignee(assignments);
@@ -44,6 +45,9 @@ mod.public = function(hub) {
 							},
 							method: 'repair'
 						}
+
+						// Update the cache as we might have it for a while...
+						cache.removeObjectFromArray('toppingUpStructures', assignment);
 
 						// Continue past this assignment, since it's been assigned and doesn't need any further action...
 						continue;

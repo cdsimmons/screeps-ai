@@ -11,7 +11,7 @@ mod.public = {};
 
 mod.public = function(hub) {
 
-	if(hub.constructionSites.length > 0) {
+	if(hub.constructionSites && hub.constructionSites.length > 0) {
 		// Get unassigned node flags
 		let assignments = hub.constructionSites;
 
