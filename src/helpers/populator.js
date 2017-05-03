@@ -42,78 +42,106 @@ mod.private.hubs = function() {
 }
 
 mod.private.game = function() {
-    // Temp vars
+    // First we will populate the important game objects...
+    log.cpu('Necessities', 'start');
+
     var flagColors = config.flags.colors;
 
-    // Rooms
+    // Room stuff
     Game.rooms = find.rooms();
-    log.cpu('rooms');
+
+    // Flags
+    Game.flags = find.flags();
+    Game.bankFlags = filter.byColors(Game.flags, flagColors.bank.primary, flagColors.bank.secondary);
+    log.cpu('flags');
 
     // Creeps
     Game.creeps = find.creeps();
-    log.cpu('creeps');
-    // Filtering
-    Game.damagedCreeps = filter.byHitsPercentage(Game.creeps, 0, 99);
-    log.cpu('damagedCreeps');
     Game.minerCreeps = filter.byMemory(Game.creeps, 'origin', 'miner');
     Game.haulerCreeps = filter.byMemory(Game.creeps, 'origin', 'hauler');
     Game.commonerCreeps = filter.byMemory(Game.creeps, 'origin', 'commoner');
     Game.guardCreeps = filter.byMemory(Game.creeps, 'origin', 'guard');
     Game.claimerCreeps = filter.byMemory(Game.creeps, 'origin', 'claimer');
     Game.pesterCreeps = filter.byMemory(Game.creeps, 'origin', 'pester');
-    log.cpu('originCreeps'); // This is giving me like 2 or 3 CPU... wtf...
-    // Filtering more...
     Game.attackingGuardCreeps = filter.byHasAssignment(Game.guardCreeps, 'attack');
-    log.cpu('filteredCreeps');
+    log.cpu('creeps');
 
-    // Flags... need to limit to hub
-    Game.flags = find.flags();
-    // Filtering
-    Game.sourceFlags = filter.byColors(Game.flags, flagColors.source.primary, flagColors.source.secondary);
-    Game.bankFlags = filter.byColors(Game.flags, flagColors.bank.primary, flagColors.bank.secondary);
-    Game.importantFlags = filter.byColors(Game.flags, flagColors.important.primary, flagColors.important.secondary);
-    Game.reserveFlags = filter.byColors(Game.flags, flagColors.reserve.primary, flagColors.reserve.secondary);
-    Game.claimFlags = filter.byColors(Game.flags, flagColors.claim.primary, flagColors.claim.secondary);
-    Game.pesterFlags = filter.byColors(Game.flags, flagColors.pester.primary, flagColors.pester.secondary);
-    Game.eyeballFlags = filter.byColors(Game.flags, flagColors.eyeball.primary, flagColors.eyeball.secondary);
-    Game.guardSpotFlags = filter.byColors(Game.flags, flagColors.guardSpot.primary, flagColors.guardSpot.secondary);
-    Game.guardRoomFlags = filter.byColors(Game.flags, flagColors.guardRoom.primary, flagColors.guardRoom.secondary);
-    Game.guardHubFlags = filter.byColors(Game.flags, flagColors.guardHub.primary, flagColors.guardHub.secondary);
-    log.cpu('flags');
-
-    // Constructions... need to limit to hub
-    Game.structures = find.structures(); // CPU spikes...
-    Game.controllers = find.controllers();
-    Game.spawns = find.spawns(); // Could sort busy and energy available
-    Game.banks = find.banks(); // Tempted to look at flags instead of the objects, but then I can't query the bank itself? capacity etc...
+    // Structures
     Game.towers = find.towers();
-    Game.nukers = find.nukers();
-    log.cpu('others');
-    Game.constructionSites = find.constructionSites();
-    log.cpu('constructionSites');
-    Game.decayingStructures = find.decayingStructures();
-    log.cpu('decayingStructures');
-    Game.damagedStructures = find.damagedStructures();
-    log.cpu('damagedStructures');
-    Game.toppingUpStructures = find.toppingUpStructures();
-    log.cpu('toppingUpStructures');
-    Game.lowEnergyStructures = find.lowEnergyStructures();
-    log.cpu('lowEnergyStructures');
-    // Filtering
+    Game.controllers = find.controllers();
+    Game.spawns = find.spawns();
     Game.lowTickControllers = _.filter(Game.controllers, (controller) => (controller.ticksToDowngrade < CONTROLLER_DOWNGRADE[controller.level]*(config.controller.limit/100)));
+    Game.lowEnergyStructures = find.lowEnergyStructures();
+    Game.banks = find.banks();
     Game.lowEnergyBanks = filter.byCapacityPercentage(Game.banks, 0, 90);
-    Game.highEnergyBanks = filter.byCapacityPercentage(Game.banks, 10, 100); // TODO - increase bottom number...
+    Game.highEnergyBanks = filter.byCapacityPercentage(Game.banks, 10, 100);
+    log.cpu('structures');
 
     // Misc
     Game.spills = find.spills();
     Game.hostiles = find.hostiles();
-    Game.imminentNukes = find.imminentNukes();
+    log.cpu('misc');
+
+    log.cpu('Necessities', 'end');
+
+    // If we have more than 100 CPU in the bucket, then we can afford to populate everything and then work on assignments...
+    if(!Game.state.lowCpu) {
+        log.cpu('Additional', 'start');
+
+        // Creeps
+        Game.damagedCreeps = filter.byHitsPercentage(Game.creeps, 0, 99);
+        log.cpu('creeps');
+
+        // Flags
+        Game.sourceFlags = filter.byColors(Game.flags, flagColors.source.primary, flagColors.source.secondary);
+        Game.importantFlags = filter.byColors(Game.flags, flagColors.important.primary, flagColors.important.secondary);
+        Game.reserveFlags = filter.byColors(Game.flags, flagColors.reserve.primary, flagColors.reserve.secondary);
+        Game.claimFlags = filter.byColors(Game.flags, flagColors.claim.primary, flagColors.claim.secondary);
+        Game.pesterFlags = filter.byColors(Game.flags, flagColors.pester.primary, flagColors.pester.secondary);
+        Game.eyeballFlags = filter.byColors(Game.flags, flagColors.eyeball.primary, flagColors.eyeball.secondary);
+        Game.guardSpotFlags = filter.byColors(Game.flags, flagColors.guardSpot.primary, flagColors.guardSpot.secondary);
+        Game.guardRoomFlags = filter.byColors(Game.flags, flagColors.guardRoom.primary, flagColors.guardRoom.secondary);
+        Game.guardHubFlags = filter.byColors(Game.flags, flagColors.guardHub.primary, flagColors.guardHub.secondary);
+        log.cpu('flags');
+
+        // Constructions... need to limit to hub
+        Game.structures = find.structures(); // CPU spikes...
+        //Game.towers = find.towers();
+        Game.nukers = find.nukers();
+        log.cpu('others');
+        Game.constructionSites = find.constructionSites();
+        log.cpu('constructionSites');
+        Game.decayingStructures = find.decayingStructures();
+        log.cpu('decayingStructures');
+        Game.damagedStructures = find.damagedStructures();
+        log.cpu('damagedStructures');
+        Game.toppingUpStructures = find.toppingUpStructures();
+        log.cpu('toppingUpStructures');
+        Game.lowEnergyStructures = find.lowEnergyStructures();
+        log.cpu('lowEnergyStructures');
+
+        // Misc
+        Game.imminentNukes = find.imminentNukes();
+
+        log.cpu('Additional', 'end');
+    }
+}
+
+mod.private.state = function() {
+    Game.state = {};
+    Game.state.lowCpu = (Game.cpu.bucket < config.cpu.surplus);
+
+    log(Game.cpu.bucket);
 }
 
 mod.public.all = function() {
     log.cpu('Populator', 'start');
     //if(!Game.namedRooms) {
         log.cpu('init');
+
+        log.cpu('State', 'start');
+        mod.private.state();
+        log.cpu('State', 'end');
         
         log.cpu('Rereference', 'start');
         mod.private.rereference();

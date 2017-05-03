@@ -11,7 +11,7 @@ mod.public = {};
 
 mod.public = function(hub) {
 
-	if(hub.damagedCreeps.length > 0) {
+	if(hub.damagedCreeps && hub.damagedCreeps.length > 0) {
 		// Get unassigned node flags
 		let assignments = hub.damagedCreeps;
 		assignments = filter.byNotHasAssignee(assignments);

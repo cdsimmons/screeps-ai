@@ -3,8 +3,9 @@
 var config = require('config');
 var log = require('helpers/log');
 var monitor = require('helpers/monitor');
-var manage = require('manager/manage');
 var populator = require('helpers/populator');
+var cache = require('helpers/cache');
+var manage = require('manager/manage');
 
 // Classes... just like with lodash, it might be worth refactoring these so they are not globals...
 // Would do this by the classes as externals within webpack and then requiring...
@@ -33,6 +34,8 @@ var loop = function () {
     }
     // First call to Memory makes the CPU spike... perhaps it is to do with the size of the Memory?
     log.cpu('Cleaned up memory');
+    //cache.cleanup();
+    //log.cpu('Cleaned up cache');
 
     // Prepare global variables every loop...
     populator.all();

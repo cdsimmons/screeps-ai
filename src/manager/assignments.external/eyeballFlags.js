@@ -10,7 +10,7 @@ mod.private = {};
 mod.public = {};
 
 mod.public = function(hub) {
-	if(Game.eyeballFlags.length > 0) {
+	if(Game.eyeballFlags && Game.eyeballFlags.length > 0) {
 		// Get unassigned node flags
 		let assignments = hub.sourceFlags;
 		assignments = filter.byNotHasAssignee(assignments);

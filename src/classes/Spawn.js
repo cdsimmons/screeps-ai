@@ -193,8 +193,6 @@ Spawn.prototype.willRecoverEnergy = function() {
 }
 
 
-
-
 // This will dynamically create the creep body depending on how much energy the room/spawn has...
 Spawn.prototype.dynamicAssemble = function(origin) {
     var capacity = this.room.energyCapacityAvailable;

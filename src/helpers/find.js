@@ -335,7 +335,7 @@ mod.public.spills = function() {
 }
 
 // Get structures... doesn't return neutral ones (walls and roads)
-mod.public.structures = function() {
+mod.public.structures = function(skipAdditional) {
     // If doesn't exist, or if it's not an array...
     if(Game.structures === undefined || !Array.isArray(Game.structures)) {
         // Add standard structures...

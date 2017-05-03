@@ -65,4 +65,11 @@ mod.public.byLowestLevel = function(targets) {
     return result;
 }
 
+// Sort by structure type, with the passed type being at the top...
+mod.public.byStructureType = function(targets, type) {
+    var result = _.sortBy(targets, (target) => (target.structureType !== type));
+
+    return result;
+}
+
 module.exports = mod.public;

@@ -11,7 +11,7 @@ mod.public = {};
 
 mod.public = function(hub) {
 	// Nuke defence!
-	if(Game.imminentNukes.length > 0) {
+	if(Game.imminentNukes && Game.imminentNukes.length > 0) {
 		// Make sure to add in tick filter again for nukes... otherwise they aren't imminent...
 		let assignments = Game.imminentNukes;
 

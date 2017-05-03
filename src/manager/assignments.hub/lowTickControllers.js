@@ -10,7 +10,7 @@ mod.private = {};
 mod.public = {};
 
 mod.public = function(hub) {
-	if(hub.lowTickControllers.length > 0) {
+	if(hub.lowTickControllers && hub.lowTickControllers.length > 0) {
 		// Get unassigned node flags
 		let assignments = hub.lowTickControllers;
 		// Only 1 is needed to go there...

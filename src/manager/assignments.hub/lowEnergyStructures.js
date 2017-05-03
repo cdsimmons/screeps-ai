@@ -3,6 +3,7 @@ var config = require('config');
 var log = require('helpers/log');
 var sort = require('helpers/sort');
 var filter = require('helpers/filter');
+var cache = require('helpers/cache');
 
 // Init the module
 var mod = {};
@@ -10,12 +11,14 @@ mod.private = {};
 mod.public = {};
 
 mod.public = function(hub) {
-	if(hub.lowEnergyStructures.length > 0) {
+	if(hub.lowEnergyStructures && hub.lowEnergyStructures.length > 0) {
 		// Get unassigned node flags
 		let assignments = hub.lowEnergyStructures;
 		assignments = filter.byNotHasAssignee(assignments);
 		// Get nearest to main spawn...
 		assignments = sort.byNearest(assignments, hub.spawns[0]);
+		// Prioritise tower...
+		assignments = sort.byStructureType(assignments, STRUCTURE_TOWER);
 
 		// If we got some unassigned node flags, best get to work
 		if(assignments.length > 0) {
@@ -44,6 +47,9 @@ mod.public = function(hub) {
 							type: 'structure',
 							steps: false // Only when we need to do multiple things
 						}
+
+						// Update the cache as we might have it for a while...
+						//cache.removeObjectFromArray('lowEnergyStructures', assignment);
 
 						// Continue past this assignment, since it's been assigned and doesn't need any further action...
 						continue;

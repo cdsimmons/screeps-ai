@@ -69,4 +69,18 @@ describe('helpers/cache', function() {
 		expect(cache.private.spread(Game.time + 10)).to.equal(spreadTarget.expiresAt + 2);
 
 	});
+
+	it('should remove an object from cache using removeObjectFromArray()', function(){
+		cache.store('removeObjectFromArray', [{'ra': 1}, {'raa': 1}, {'raaa': 1}]);
+
+		console.log(Memory.cache);
+
+		expect(Memory.cache['removeObjectFromArray'].value.length).to.equal(3);
+
+		cache.removeObjectFromArray('removeObjectFromArray', {'ra': 1});
+
+		expect(Memory.cache['removeObjectFromArray'].value.length).to.equal(2);
+		expect(Memory.cache['removeObjectFromArray'].value).to.not.contain({'ra': 1});
+		expect(Memory.cache['removeObjectFromArray'].value).to.contain({'raa': 1});
+	});
 });

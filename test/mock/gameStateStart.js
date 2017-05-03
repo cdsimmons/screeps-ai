@@ -12,6 +12,7 @@ module.exports = function(reset) {
     Game.structures = JSON.parse(JSON.stringify(require('./objects/Game.structures')));
     Game.constructionSites = JSON.parse(JSON.stringify(require('./objects/Game.constructionSites')));
     Game.time = 1;
+    Game.cpu.bucket = 10000;
 
     Memory = JSON.parse(JSON.stringify(require('./objects/Memory')));
 
