@@ -93,7 +93,7 @@ mod.public.all = function() {
 				mod.public.assignments.hub.claimFlags(hub);
 				log.cpu('claimFlags');
 
-				hub.supplyDemand();
+				//hub.supplyDemand();
 
 				log.cpu('Hub management', 'end');
 			}

@@ -246,9 +246,9 @@ mod.public.lowEnergyStructures = function() {
                     return false
                 }
 
-                // If they are a tower, then only pass truth test if they are below 50%...
+                // If they are a tower, then only pass truth test if they are below 60%...
                 if(_.contains([STRUCTURE_TOWER], target.structureType)) {
-                    return (filter.byCapacityPercentage([target], 0, 50).length > 0);
+                    return (filter.byCapacityPercentage([target], 0, 60).length > 0);
                 }
 
                 // Otherwise fall to returning up to 99%

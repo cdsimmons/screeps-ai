@@ -10,22 +10,26 @@ mod.private = {};
 mod.public = {};
 
 mod.public = function(hub) {
-	// Nuke defence!
-	if(Game.imminentNukes && Game.imminentNukes.length > 0) {
-		// Make sure to add in tick filter again for nukes... otherwise they aren't imminent...
-		let assignments = Game.imminentNukes;
+	if(Game.imminentNukes) {
+		// Nuke defence!
+		if(Game.imminentNukes.length > 0) {
+			// Make sure to add in tick filter again for nukes... otherwise they aren't imminent...
+			let assignments = Game.imminentNukes;
 
-		if(assignments.length > 0) {
-			for(const assignment of assignments) {
-				Game.notify('IMMINENT NUKE from '+assignment.launchRoomName+' landing at '+assignment.pos.roomName);
+			if(assignments.length > 0) {
+				for(const assignment of assignments) {
+					Game.notify('IMMINENT NUKE from '+assignment.launchRoomName+' landing at '+assignment.pos.roomName);
 
-				// Get controller for room...
-				let controller = Game.namedRooms[assignment.pos.roomName].controller;
-				// Activate safe mode...
-				controller.activateSafeMode();
+					// Get controller for room...
+					let controller = Game.namedRooms[assignment.pos.roomName].controller;
+					// Activate safe mode...
+					controller.activateSafeMode();
+				}
 			}
+			// If I have pos.roomName, then hub filter should actually be working, and I could activate safe mode from hub...
+		} else {
+
 		}
-		// If I have pos.roomName, then hub filter should actually be working, and I could activate safe mode from hub...
 	}
 }
 
