@@ -16,7 +16,11 @@ mod.private.expired = function(key) {
 
     // If we are in a lowCpu game state, then give our caches an extension...
     if(Game.state.lowCpu) {
-        extension = 30;
+        extension = extension + 30;
+    }
+
+    if(Game.state.veryLowCpu) {
+        extension = extension + 1000;
     }
     
     return (Game.time >= (Memory.cache[key].expiresAt + extension));

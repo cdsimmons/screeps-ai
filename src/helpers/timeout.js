@@ -34,4 +34,8 @@ mod.public.waiting = function(key, delay = 5) {
     return true;
 }
 
+
+// debounce...
+// Basically keep creating timeout even if it exists... return true if timeout ever reached
+
 module.exports = mod.public;

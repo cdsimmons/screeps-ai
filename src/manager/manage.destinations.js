@@ -78,7 +78,7 @@ mod.public = function() {
 		            //spills = filter.byNotHasDestinee(spills);
 		            // Instead of checking if they have destinee, we're only including spills which have double this capacity...
 		            // TODO - Really we should check if it has enough for all destinees...
-		            spills = filter.byAmount(spills, assignee.carryCapacity * 2, 100000);
+		            spills = filter.byAmount(spills, assignee.carryCapacity * 1.5, 100000);
 		            spills = sort.byNearest(spills, assignee.pos);
 					//let nearSpills = filter.byRange(spills, assignee.pos, 50);
 

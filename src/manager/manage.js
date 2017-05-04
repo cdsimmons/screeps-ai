@@ -45,7 +45,7 @@ mod.public.spawns = require('manager/manage.spawns');
 // Manage the world... basically everything not managed by hubs...
 mod.public.all = function() {
 	// If we the game is populated, then we can assign to it...
-	//if(Game.populated) {
+	if(!Game.state.veryLowCpu) {
 		// Externals... basically anything that can be outside of a hub... I don't think claiming will ever technically be outside of a hub, so I'm going to slowly split off a hub
 		mod.public.assignments.external.eyeballFlags();
 		mod.public.assignments.external.imminentNukes();
@@ -93,19 +93,29 @@ mod.public.all = function() {
 				mod.public.assignments.hub.claimFlags(hub);
 				log.cpu('claimFlags');
 
+				hub.supplyDemand();
+
 				log.cpu('Hub management', 'end');
 			}
 		}
 		
 		mod.public.destinations();
-	//}
+	}
 
 	mod.public.actions(); // All structures and creeps carry out their action or clear it...
 
 	mod.public.spawns(); // Should probably move away from the hub restriction and put it after actions...
 
-	// Going to struggle to do a switch over for live once I have everything it has... basically creeps won't have assignments like I expect
-	// External should be anything that can be outside of a hub... can guards be outside of a hub? No because this is hub defence...
+	// Perhaps it should be done in the assignment...
+	// Controller upgrade... if really high energy banks, then try to spawn / increase demand...
+	// Low energy banks... if spills total / source flags > 1200 (basically, all spills have more than 1.2k each), then try to spawn / increase demand...
+	// Low energy structures... if high energy banks, then try to spawn / increase demand...
+	// Construction sites... just try to spawn / increase demand no matter what?...
+
+	// Lets consider controller upgrade... really high energy banks would run out quick I think... if we say 95% = high, then it should be met in about 100 ticks maybe
+	// Low energy banks... has no choice but to go up, unless we have things picking up enough... I think it's inevitable to spawn for this, even if we made supplyCreeps completely reset demand
+	// Low energy structures... lets say these are needed for 200 ticks, then spawn, and needed for 200 ticks, then spawn, and needed for 200 ticks... point is that it loops and we end up with always having demand before we can reduce... perhaps this should reset in this case?
+	// Construction sites... if high energy banks, then demand up... if really high banks, then reduce demand limit?
 }
 
 // When I look at combat, I should probably avoid being complicated and just create a squad against whatever hub is nearby...

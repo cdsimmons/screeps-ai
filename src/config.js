@@ -8,11 +8,19 @@ mod.private.defaults = {
         rooms: [],
         creeps: {
             commoner: {
+                minimum: 1,
+                maximum: 6,
                 count: 2
             },
             hauler: {
+                minimum: 1,
+                maximum: 6,
                 count: 2
             }
+        },
+        demandLimits: {
+            commoner: 500,
+            hauler: 500
         },
         assignments: {
             damagedStructures: {
@@ -37,26 +45,10 @@ mod.public = {
             rooms: ['sim']
         },
         E53N47: {
-            rooms: ['E53N47', 'E52N47', 'E52N48'],
-            creeps: {
-                commoner: {
-                    count: 1
-                },
-                hauler: {
-                    count: 2
-                }
-            }
+            rooms: ['E53N47', 'E52N47', 'E52N48']
         },
         E53N45: {
-            rooms: ['E53N45', 'E53N44'],
-            creeps: {
-                commoner: {
-                    count: 1
-                },
-                hauler: {
-                    count: 3
-                }
-            }
+            rooms: ['E53N45', 'E53N44']
         }
     },
     structures: {
@@ -134,7 +126,7 @@ mod.public = {
         }
     },
     cpu: {
-        surplus: 4000 // How much CPU to keep in bucket before we try to really slim down our actions... can then use this up in times of war
+        surplus: 1000 // How much CPU to keep in bucket before we try to really slim down our actions... can then use this up in times of war
     }
 };
 

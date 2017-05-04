@@ -9,6 +9,7 @@ var mod = {};
 mod.private = {};
 mod.public = {};
 
+
 mod.public = function(hub) {
 
 	if(hub.lowEnergyBanks && hub.lowEnergyBanks.length > 0) {
@@ -58,11 +59,13 @@ mod.public = function(hub) {
 				// We'll probably never get to 0 haulers though, since haulers have to refill the spawn :P
 
 				if(true) { 
-					// Just get the total number of haulers now...
-					let assignees = hub.haulerCreeps;
+					// Get spill mean...
+					const spillMean = hub.getSpillMean();
+					const hasMinimum = hub.hasMinimum('hauler');
+					const hasMaximum = hub.hasMaximum('hauler');
 
-					// This is just making it spawn every time we don't have a free hauler... hmm
-					if(assignees.length < hub.config.creeps.hauler.count) {
+					// If not have minimum or have high spills and not have demand... should only demand if we have high spills, and then it will take 200 ticks of demanding to succeed request
+					if(!hasMinimum || (!hasMaximum && spillMean > 1500 && hub.meetDemand('lowEnergyBanks', 300))) {//assignees.length < hub.config.creeps.hauler.count) {
 						// If we still have some assignments, then we fall to here since continues haven't been hit...
 						const spawn = hub.spawns[0]; // Just get the first spawner... later we can figure out if spawner is busy or not...
 						// Build the creep we want
@@ -72,7 +75,7 @@ mod.public = function(hub) {
 			    		}
 
 			    		let priority = 5;
-			    		if(hub.haulerCreeps.length === 0) {
+			    		if(!hasMinimum) {
 			    			priority = 2;
 			    		}
 

@@ -57,7 +57,7 @@ mod.public.constructionSites = function() {
 
 // Get controllers
 mod.public.controllers = function() {
-    var targets = _.filter(mod.public.structures(), (structure) => (structure.structureType === STRUCTURE_CONTROLLER));
+    var targets = _.filter(mod.public.structures(false), (structure) => (structure.structureType === STRUCTURE_CONTROLLER));
     
     return targets;
 }
@@ -239,7 +239,7 @@ mod.public.lowEnergyStructures = function() {
         if(cache.retrieve('lowEnergyStructures')) {
             Game.lowEnergyStructures = cache.retrieve('lowEnergyStructures');
         } else {
-            Game.lowEnergyStructures = mod.public.structures();
+            Game.lowEnergyStructures = mod.public.structures(false);
             Game.lowEnergyStructures = _.filter(Game.lowEnergyStructures, (target) => {
                 // Filter out energy containers...
                 if(_.contains([STRUCTURE_CONTAINER, STRUCTURE_STORAGE, STRUCTURE_LINK], target.structureType) || _.contains([STRUCTURE_ROAD, STRUCTURE_WALL, STRUCTURE_RAMPART], target.structureType)) {
@@ -271,7 +271,7 @@ mod.public.nukers = function() {
             Game.nukers = cache.retrieve('nukers');
         } else {
             // Get all the structures in room
-            Game.nukers = mod.public.structures();
+            Game.nukers = mod.public.structures(false);
             // Filter
             Game.nukers = _.filter(Game.nukers, (target) => (target.structureType === STRUCTURE_NUKER));
 
@@ -335,35 +335,38 @@ mod.public.spills = function() {
 }
 
 // Get structures... doesn't return neutral ones (walls and roads)
-mod.public.structures = function(skipAdditional) {
-    // If doesn't exist, or if it's not an array...
-    if(Game.structures === undefined || !Array.isArray(Game.structures)) {
+mod.public.structures = function(requireAdditional = true) {
+    // If doesn't exist, or if it's not an array... or we need to make sure that we have the additional structures in!
+    if(Game.structures === undefined || !Array.isArray(Game.structures) || requireAdditional) {
         // Add standard structures...
         Game.structures = _.map(Game.structures, (structure) => (structure));
 
-        // Adding roads and walls... trying to use cache if we have it since we don't care about old stuff really
-        if(cache.retrieve('allAdditionalStructures')) {
-            Game.structures = _.union(Game.structures, cache.retrieve('allAdditionalStructures'));
-        } else {
-            const rooms = mod.public.rooms();
-            let allAdditionalStructures = [];
+        // Getting additional is expensive, and it isn't always needed...
+        if(requireAdditional) {
+            // Adding roads and walls... trying to use cache if we have it since we don't care about old stuff really
+            if(cache.retrieve('allAdditionalStructures')) {
+                Game.structures = _.union(Game.structures, cache.retrieve('allAdditionalStructures'));
+            } else {
+                const rooms = mod.public.rooms();
+                let allAdditionalStructures = [];
 
-            for(let key in rooms) {
-                let room = rooms[key];
+                for(let key in rooms) {
+                    let room = rooms[key];
 
-                // Filter does lower it...
-                let additionalStructures = room.find(FIND_STRUCTURES, {
-                    filter: function(structure) {
-                        return (structure.structureType === STRUCTURE_ROAD || structure.structureType === STRUCTURE_WALL);
-                    }
-                });
+                    // Filter does lower it...
+                    let additionalStructures = room.find(FIND_STRUCTURES, {
+                        filter: function(structure) {
+                            return (structure.structureType === STRUCTURE_ROAD || structure.structureType === STRUCTURE_WALL);
+                        }
+                    });
 
-                allAdditionalStructures = _.union(allAdditionalStructures, additionalStructures);
+                    allAdditionalStructures = _.union(allAdditionalStructures, additionalStructures);
+                }
+
+                // Store in cache and add to Game.structures...
+                Game.structures = _.union(Game.structures, allAdditionalStructures);
+                cache.store('allAdditionalStructures', allAdditionalStructures);
             }
-
-            // Store in cache and add to Game.structures...
-            Game.structures = _.union(Game.structures, allAdditionalStructures);
-            cache.store('allAdditionalStructures', allAdditionalStructures);
         }
     }
 
@@ -395,7 +398,7 @@ mod.public.toppingUpStructures = function() {
 // Get towers
 mod.public.towers = function() {
     if(Game.towers === undefined) {
-        var towers = _.filter(mod.public.structures(), (structure) => {
+        var towers = _.filter(mod.public.structures(false), (structure) => {
             if(structure.structureType === STRUCTURE_TOWER) {
                 return true;
             }
