@@ -102,47 +102,56 @@ Hub.prototype.hasMaximum = function(origin) {
     return creeps.length >= maximum;
 }
 
-// Extend hub proto for equalizer
+// An assignment has a demand to meet it's supply... so increase demand until it reaches the limit it has passed...
+// If demand limit not met, then return false
+// If demand limit met, then return true and it can create creep/whatever
 Hub.prototype.meetDemand = function(assignment, triggerSupply) {
     // Init demand memory...
     if(!this.memory.demand) {
         this.memory.demand = {};
     }
 
-    // If we don't have the maximum for this type of creep...
-    //if(!this.hasMaximum(assignment)) {
-        // Remember which one has been demanded...
-        this.demanded.push(assignment);
+    // Remember which one has been demanded...
+    this.demanded.push(assignment);
 
-        // Increase demand...
-        var demand = this.memory.demand[assignment] || 0;
+    // Increase demand...
+    var demand = this.memory.demand[assignment] || 0;
 
-        // If our demand is less than the limit...
-        if(demand < triggerSupply) {
-            this.memory.demand[assignment] = demand + 1;
+    // If our demand is less than the limit...
+    if(demand < triggerSupply) {
+        this.memory.demand[assignment] = demand + 1;
 
-            return false;
-        } else {
-            this.memory.demand[assignment] = 0;
+        return false;
+    } else {
+        this.memory.demand[assignment] = 0;
 
-            return true;
-        }
-    // } else {
-    //     return false;
-    // }
+        return true;
+    }
 }
 
-Hub.prototype.supplyDemand = function() {
+// Every tick, we need to make sure we reduce the demand that is no longer being demanded... most likely because the supply has been met
+// It could also be because CPU is low though... ack!
+// This means we could demand, and then clear it of demand without knowing if it is actually supplied...
+// Hub.prototype.supplyDemand = function() {
+//     if(this.memory.demand) {
+//         for(let assignment in this.memory.demand) {
+//             // If we haven't demanded this item for this tick, then reduce demand...
+//             if(!_.contains(this.demanded, assignment)) {
+//                 // Only reduce if greater than 0
+//                 if(this.memory.demand[assignment] > 0) {
+//                     log('Reducing demand for '+assignment);
+//                     this.memory.demand[assignment] = this.memory.demand[assignment] - 10;
+//                 }
+//             }
+//         }
+//     }
+// }
+
+Hub.prototype.supplyDemand = function(assignment) {
     if(this.memory.demand) {
-        for(let assignment in this.memory.demand) {
-            // If we haven't demanded this item for this tick, then reduce demand...
-            if(!_.contains(this.demanded, assignment)) {
-                // Only reduce if greater than 0
-                if(this.memory.demand[assignment] > 0) {
-                    log('Reducing demand for '+assignment);
-                    this.memory.demand[assignment] = this.memory.demand[assignment] - 10;
-                }
-            }
+        // Only reduce if greater than 0
+        if(this.memory.demand[assignment] && this.memory.demand[assignment] > 0) {
+            this.memory.demand[assignment] = this.memory.demand[assignment] - 10;
         }
     }
 }
