@@ -28,6 +28,8 @@ mod.public = function(hub) {
 					assignees = filter.byNotHasAssignment(assignees);
 					// Filter by tower in the same room
 					assignees = filter.bySameRoom(assignees, assignment.pos.roomName);
+					// Only use them to top up structures if they have at least 50% energy...
+					assignees = filter.byCapacityPercentage(assignees, 50, 100);
 
 					// If we have some assignees... then assign
 					if(assignees.length > 0) {

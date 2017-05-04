@@ -22,9 +22,41 @@ describe('Hub', function() {
 		expect(Game.hubs['sim'].spills).to.exist;
 	});
 
-	// Equalizer...
-	// Can be increased
-	// Can be decreased...
-	// Can be greater than limit...
-	// Can be triggered by hubAssignments?
+	it('should have be able to provide us with the mean amount for spills using getSpillMean()', function(){
+		expect(Game.hubs['sim'].getSpillMean()).to.equal(460);
+	});
+
+	it('should increase demand for a creep using demandCreep()', function(){
+		var allowed = Game.hubs['sim'].meetDemand('hauler', 100);
+		var demand = Game.hubs['sim'].memory.demand['hauler'];
+
+		expect(demand).to.be.above(0);
+
+		expect(allowed).to.equal(false);
+
+	});
+
+	it('should meet demand for a creep using demandCreep()', function(){
+		var allowed = Game.hubs['sim'].meetDemand('hauler', 100);
+
+		expect(allowed).to.equal(false);
+		
+		Game.hubs['sim'].memory.demand['hauler'] = 10000;
+
+		allowed = Game.hubs['sim'].meetDemand('hauler', 100);
+
+		expect(allowed).to.equal(true);
+		expect(Game.hubs['sim'].memory.demand['hauler']).to.equal(0);
+	});
+
+	it('should reduce demand using supplyCreeps()', function(){
+		var allowed = Game.hubs['sim'].meetDemand('hauler', 100);
+		var demand = Game.hubs['sim'].memory.demand['hauler'];
+
+		expect(Game.hubs['sim'].memory.demand['hauler']).to.be.above(0);
+
+		Game.hubs['sim'].supplyDemand();
+
+		expect(Game.hubs['sim'].memory.demand['hauler']).to.be.equal(demand);
+	});
 });

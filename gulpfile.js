@@ -49,15 +49,15 @@ gulp.task('test', ['lint'], function(done) {
         singleRun: true
     }, function(exitCode) {
         // If tests failed...
-        if(exitCode !== 0) {
-        	// Let us know
-        	console.log('Tests failed');
+        // if(exitCode !== 0) {
+        // 	// Let us know
+        // 	console.log('Tests failed');
 
-        	// If not watching, exit process... has to be done otherwise Karma just keeps things alive
-        	if(!watching) {
-        		process.exit();
-        	}
-        }
+        // 	// If not watching, exit process... has to be done otherwise Karma just keeps things alive
+        // 	if(!watching) {
+        // 		process.exit();
+        // 	}
+        // }
 
         // Assumption is that master branch is live branch... we will stop distribution... for dev no need
 		git.branch(function (str) {

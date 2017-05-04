@@ -109,7 +109,7 @@ mod.public = function() {
 		            let movement = destinee.moveTo(targetPos, opts);
 
 					// Repair any structures if we aren't empty...
-					if(!destinee.isEmpty()) {
+					if(!destinee.isEmpty() && Game.toppingUpStructures) {
 			            // Find an idle assignment...
 						let idleAssignments;
 						idleAssignments = Game.toppingUpStructures;

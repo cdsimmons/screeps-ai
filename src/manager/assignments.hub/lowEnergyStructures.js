@@ -15,10 +15,10 @@ mod.public = function(hub) {
 		// Get unassigned node flags
 		let assignments = hub.lowEnergyStructures;
 		assignments = filter.byNotHasAssignee(assignments);
-		// Get nearest to main spawn...
-		assignments = sort.byNearest(assignments, hub.spawns[0]);
+		// Get nearest to bank or spawn...
+		assignments = sort.byNearest(assignments, hub.banks[0] || hub.spawns[0]);
 		// Prioritise tower...
-		assignments = sort.byStructureType(assignments, STRUCTURE_TOWER);
+		//assignments = sort.byStructureType(assignments, STRUCTURE_TOWER);
 
 		// If we got some unassigned node flags, best get to work
 		if(assignments.length > 0) {
@@ -57,11 +57,12 @@ mod.public = function(hub) {
 				}
 
 				if(true) { 
-					// Just get the total number of haulers now...
-					let assignees = hub.haulerCreeps;
+					const spillMean = hub.getSpillMean();
+					const hasMinimum = hub.hasMinimum('hauler');
+					const hasMaximum = hub.hasMaximum('hauler');
 
-					// Have to manually be aware of how many haulers we need for a hub... probably best way to do it...
-					if(assignees.length < hub.config.creeps.hauler.count) {
+					// Basically make sure there is enough energy to be hauled into the low energy structures...
+					if(!hasMinimum || (!hasMaximum && (hub.highEnergyBanks || spillMean > 1500) && hub.meetDemand('lowEnergyStructures', 350))) {
 						// If we still have some assignments, then we fall to here since continues haven't been hit...
 						const spawn = hub.spawns[0]; // Just get the first spawner... later we can figure out if spawner is busy or not...
 						// Build the creep we want

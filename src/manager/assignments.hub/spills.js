@@ -9,23 +9,31 @@ var mod = {};
 mod.private = {};
 mod.public = {};
 
+// I had thought there would be a purpose to completing spill assignments, but if all the banks are full, then no point in spills?? No point in fulfulling...
+// The purpose of spills is to fill banks, therefore banks are the assignment, not spills...
 mod.public = function(hub) {
-	if(hub.lowTickControllers && hub.lowTickControllers.length > 0) {
+
+	if(hub.spills && hub.spills.length > 0) {
 		// Get unassigned node flags
-		let assignments = hub.lowTickControllers;
-		// Only 1 is needed to go there...
-		assignments = filter.byNotHasAssignee(assignments);
-		// assignments = filter.byWithout(lowEnergyBanks, assignments);
+		let assignments = hub.spills;
+		// Filter by amount...
+		assignments = filter.byAmount(spills, 1000, 1000001);
+		// Filter by already assigned...
+		assignments = filter.byAssignedLimit(assignments, 2);
+		// Get nearest to main spawn...
+		assignments = sort.byNearest(assignments, hub.spawns[0]);
 
 		// If we got some unassigned node flags, best get to work
 		if(assignments.length > 0) {
 			for(const assignment of assignments) {
 
-				// Try to assign...
 				if(true) {
 					// Get unassigned workers for the hub...
-					let assignees = hub.commonerCreeps;
+					let assignees = hub.haulerCreeps;
+					// Only get unassigned creeps...
 					assignees = filter.byNotHasAssignment(assignees);
+					// Only use creeps with some space...
+					assignees = filter.byCapacityPercentage(assignments, 0, 99);
 
 					// If we have some assignees... then assign
 					if(assignees.length > 0) {
@@ -36,12 +44,13 @@ mod.public = function(hub) {
 
 						// Set the assignment for this assignee
 						assignee.memory.assignment = {
-							name: 'lowTickControllers',
+							name: 'spills',
 							target: {
 								id: assignment.id || assignment.name,
 								pos: assignment.pos
 							},
-							method: 'upgradeController'
+							method: 'pickup',
+							steps: true // Does it need to drop off before? Confused...
 						}
 
 						// Continue past this assignment, since it's been assigned and doesn't need any further action...
@@ -49,35 +58,38 @@ mod.public = function(hub) {
 					}
 				}
 
-				// Spawn if needed...
-				if(true) { 
-					const hasMinimum = hub.hasMinimum('commoner');
-					const hasMaximum = hub.hasMaximum('commoner');
+				// Since no structures are in demand, I won't even try to spawn anything actually...
+				// If our banks are maxed out then haulers will do nothing anyway
+				// We'll probably never get to 0 haulers though, since haulers have to refill the spawn :P
 
-					// No real blockers... very important we meet demand for low tick controllers quickly... we just delay because another commoner will probably go and tick it up before 150 ticks...
-					if(!hasMinimum || (!hub.hasMaximum && hub.meetDemand('lowTickControllers', 150))) {
+				if(true) { 
+					// Just get the total number of haulers now...
+					let assignees = hub.haulerCreeps;
+
+					// This is just making it spawn every time we don't have a free hauler... hmm
+					if(assignees.length < hub.config.creeps.hauler.count) {
 						// If we still have some assignments, then we fall to here since continues haven't been hit...
 						const spawn = hub.spawns[0]; // Just get the first spawner... later we can figure out if spawner is busy or not...
 						// Build the creep we want
 			    		const memory = {
-			    			'origin': 'commoner',
+			    			'origin': 'hauler',
 			    			'hub': hub.id
 			    		}
 
 			    		let priority = 5;
-			    		if(hub.commonerCreeps.length === 0) {
-			    			priority = 1;
+			    		if(hub.haulerCreeps.length === 0) {
+			    			priority = 2;
 			    		}
 
 			    		// Spawn it...
-			    		spawn.smartQueueCreation(memory);
+			    		spawn.smartQueueCreation(memory, priority);
 					}
 				}
 
 				break;
 			}
 		}
-    }
+	}
 }
 
 module.exports = mod.public;

@@ -55,6 +55,8 @@ var loop = function () {
     // CPU after all that...
     log.cpu('///////////// end', 'end');
 
+    log(Game.cpu.bucket);
+
     // Reset the log state at end of every loop
     log.reset();
 }

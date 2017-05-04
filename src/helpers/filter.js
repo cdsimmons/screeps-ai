@@ -95,8 +95,8 @@ mod.public.byCapacityPercentage = function(targets, from, to) {
     to = to / 100;
 
     var result = _.filter(targets, (target) => {
-        let current = _.sum(target.store) || target.energy || 0;
-        let max = target.storeCapacity || target.energyCapacity;
+        let current = _.sum(target.store) || _.sum(target.carry) || target.energy || 0;
+        let max = target.storeCapacity || target.carryCapacity || target.energyCapacity;
 
         // If current is greater than the passed from percentage, and current is less than the passed to percentage...
         if(current >= (max * from) && current <= (max * to)) {
@@ -264,6 +264,12 @@ mod.public.byHub = function(targets, hub) {
 // Get the idle ones...
 mod.public.byIdle = function(targets) {
     var result = _.filter(targets, (target) => (target.memory.destination === undefined));
+    return result;
+}
+
+// Get the idle ones...
+mod.public.byIsEmpty = function(targets) {
+    var result = _.filter(targets, (target) => (target.isEmpty()));
     return result;
 }
 

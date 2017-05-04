@@ -53,11 +53,11 @@ mod.public = function(hub) {
 
 				// Spawn if needed...
 				if(true) { 
-					// Just get the total number of commoners now...
-					let assignees = hub.commonerCreeps;
+					const spillMean = hub.getSpillMean();
+					const hasMinimum = hub.hasMinimum('commoner');
+					const hasMaximum = hub.hasMaximum('commoner');
 
-					// This is just making it spawn every time we don't have a free hauler... hmm
-					if(assignees.length < hub.config.creeps.commoner.count) {
+					if(!hasMinimum || (!hasMaximum && (hub.highEnergyBanks.length >= 1 || (hub.banks.length === 0 && spillMean > 1500)) && hub.meetDemand('damagedStructures', 400))) {
 						// If we still have some assignments, then we fall to here since continues haven't been hit...
 						const spawn = hub.spawns[0]; // Just get the first spawner... later we can figure out if spawner is busy or not...
 						// Build the creep we want
