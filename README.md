@@ -1,6 +1,6 @@
 # Screeps AI
 
-Screeps is a game in which you utilise an [API](http://docs.screeps.com/api/) to control virtual robots to mine, move, defend, and expand your base.
+[Screeps](http://screeps.com/) is a game in which you utilise an [API](http://docs.screeps.com/api/) to control virtual robots to mine, move, defend, and expand your base.
 
 I play the game with a very low CPU limit (10) meaning I have to constantly optimize my code. Because of this, I've gone with bundling everything using webpack instead of letting the game work with require.
 
